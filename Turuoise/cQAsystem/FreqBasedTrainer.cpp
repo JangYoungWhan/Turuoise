@@ -8,7 +8,7 @@ FreqBasedTrainer::FreqBasedTrainer()
 FreqBasedTrainer::FreqBasedTrainer(SqliteConnector* SqlConnector)
 	:BaseTrainer(SqlConnector)
 {
-	//this->mSqlConnector = SqlConnector;
+
 }
 
 FreqBasedTrainer::~FreqBasedTrainer()
@@ -24,11 +24,15 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath)
 	// traverse all files 
 	std::forward_list<String>* pFlist = new std::forward_list<String>();
 	readDirectory(trainingPath.c_str(), pFlist);
+
+	auto cur_progress = 0;
+	auto numOfFiles = std::distance(pFlist->begin(), pFlist->end())-1;
 	for(String& xmlFile : *pFlist)
 	{
-		std::cout << xmlFile << " : Training..." << std::endl;
+		//std::cout << xmlFile << " : Training..." << std::endl;
+		mProgressBar->dispalyPrgressBar(cur_progress++, numOfFiles);
 		mXmlParser = new RapidXmlParser(xmlFile);
-		mXmlParser->runParsing();	
+		mXmlParser->runParsing();
 
 		const std::forward_list<Term<String, Integer>>* extractWords = nullptr;
 
@@ -43,6 +47,8 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath)
 		delete mXmlParser;
 	}
 	delete pFlist;
+
+	std::cout<<std::endl;
 
 	return true;
 }
