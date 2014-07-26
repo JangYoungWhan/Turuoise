@@ -1,0 +1,21 @@
+﻿빌드 시작: 2014-07-24 오후 10:36:16
+     1>2 노드의 "D:\MyWorkSpace\Turuoise\cQAsystem\cQAsystem.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt FreqBasedTrainer.cpp cQAsystem.cpp main.cpp
+         FreqBasedTrainer.cpp
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(1): error C3872: '0x2028': 식별자에는 이 문자를 사용할 수 없습니다.
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(1): warning C4067: 전처리기 지시문 다음에 예기치 않은 토큰이 있습니다. 줄 바꿈 문자가 필요합니다.
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(2): fatal error C1070: 'd:\myworkspace\turuoise\cqasystem\basetrainer.h' 파일에서 #if/#endif 쌍이 짝이 맞지 않습니다.
+         cQAsystem.cpp
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(1): error C3872: '0x2028': 식별자에는 이 문자를 사용할 수 없습니다.
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(1): warning C4067: 전처리기 지시문 다음에 예기치 않은 토큰이 있습니다. 줄 바꿈 문자가 필요합니다.
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(2): fatal error C1070: 'd:\myworkspace\turuoise\cqasystem\basetrainer.h' 파일에서 #if/#endif 쌍이 짝이 맞지 않습니다.
+         main.cpp
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(1): error C3872: '0x2028': 식별자에는 이 문자를 사용할 수 없습니다.
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(1): warning C4067: 전처리기 지시문 다음에 예기치 않은 토큰이 있습니다. 줄 바꿈 문자가 필요합니다.
+     1>d:\myworkspace\turuoise\cqasystem\BaseTrainer.h(2): fatal error C1070: 'd:\myworkspace\turuoise\cqasystem\basetrainer.h' 파일에서 #if/#endif 쌍이 짝이 맞지 않습니다.
+     1>"D:\MyWorkSpace\Turuoise\cQAsystem\cQAsystem.vcxproj" 프로젝트를 빌드했습니다(Build 대상). - 실패
+
+빌드하지 못했습니다.
+
+경과 시간: 00:00:01.73
