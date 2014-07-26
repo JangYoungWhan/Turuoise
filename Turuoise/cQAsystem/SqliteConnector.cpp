@@ -149,7 +149,7 @@ bool SqliteConnector::updateDB(const std::forward_list<Term<String, Integer>>* w
 		}
 
 		if( map_id_freqeuncy.find( atoi( result[0].at( 0).c_str())) == map_id_freqeuncy.end()) {
-			map_id_freqeuncy.insert( std::make_pair( atoi( result[0].at( 0).c_str()), 1));
+			map_id_freqeuncy.insert( std::make_pair( atoi( result[0].at( 0).c_str()), iter->getTermFreq()));
 		}
 		else {
 			map_id_freqeuncy[ atoi( result[0].at( 0).c_str())]++;
