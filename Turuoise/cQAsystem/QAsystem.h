@@ -22,7 +22,7 @@ public:
 	virtual void calculateScore() = 0;
 
 	// Phase 4 : Refine score and print Q-A pairs in descending order.
-	virtual void dispalyDocsDescendingOrder() = 0;
+	virtual void dispalyResult() = 0;
 };
 
 

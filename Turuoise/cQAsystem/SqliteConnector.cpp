@@ -88,7 +88,7 @@ bool SqliteConnector::openDB()
 
 bool SqliteConnector::initDB()
 {
-	if(isDbAccessible())
+	if(!isDbAccessible())
 	{
 		if(makeDB())
 			return true;

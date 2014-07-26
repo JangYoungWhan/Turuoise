@@ -52,8 +52,8 @@ void CQAsystem::calculateScore()
 
 	delete mSqliteConnector;
 }
-void CQAsystem::dispalyDocsDescendingOrder()
+void CQAsystem::dispalyResult()
 {
-	std::cout << "Ready to dispalyDocsDescendingOrder" << std::endl;
+	std::cout << "Ready to dispalyResult" << std::endl;
 	std::cout << "=== Done ===" << std::endl << std::endl;
 }
