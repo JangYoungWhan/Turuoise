@@ -88,7 +88,7 @@ bool SqliteConnector::openDB()
 
 bool SqliteConnector::initDB()
 {
-	if(!isDbAccessible())
+	if(isDbAccessible())
 	{
 		if(makeDB())
 			return true;
@@ -118,7 +118,7 @@ bool SqliteConnector::updateDB(const std::forward_list<Term<String, Integer>>* w
 	std::map< Integer, Integer> map_id_freqeuncy;
 	for( auto iter = words->begin() ; iter != words->end(); iter++) {
 		//std::cout << *iter << std::endl;
-
+		
 		sql = "SELECT WORDID FROM WORD_ID WHERE NAME='";
 		sql += ANSIToUTF8( iter->getTerm().c_str());
 		sql += "'";
@@ -126,19 +126,21 @@ bool SqliteConnector::updateDB(const std::forward_list<Term<String, Integer>>* w
 		if( result.size() == 0) {
 			sql = "SELECT Count( WORDID) FROM WORD_ID";
 			result = queryDB(sql.c_str());
-
-			sql = "INSERT INTO WORD_ID VALUES( " + result[ 0].at( 0) + ", '";
+		
+			sql = "INSERT INTO WORD_ID VALUES( " + result[0].at( 0) + ", '";
 			sql += ANSIToUTF8( iter->getTerm().c_str());
 			sql += "')";
 			queryDB(sql.c_str());
 		}
 
-		if( map_id_freqeuncy.find( atoi( result[ 0].at( 0).c_str())) == map_id_freqeuncy.end()) {
-			map_id_freqeuncy.insert( std::make_pair( atoi( result[ 0].at( 0).c_str()), iter->getTermFreq()));
+		if( map_id_freqeuncy.find( atoi( result[0].at( 0).c_str())) == map_id_freqeuncy.end()) {
+			map_id_freqeuncy.insert( std::make_pair( atoi( result[0].at( 0).c_str()), 1));
 		}
 		else {
 			map_id_freqeuncy[ atoi( result[0].at( 0).c_str())]++;
+		}
 	}
+
 
 	sql = "SELECT COUNT( DOCID) FROM ";
 	sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
@@ -263,65 +265,6 @@ Real SqliteConnector::getIDF(String &term, int flag) {
 	}
 }
 
-Integer SqliteConnector::getCountWordID(){
-	String sql;
-	std::vector< std::vector<String>> result;
-
-	sql = "SELECT Count( WORDID) FROM WORD_ID";
-	result = queryDB(sql.c_str());
-
-	if( result.size() == 0)
-		return 0;
-	else 
-		return atoi( result[ 0].at( 0).c_str());
-}
-
-Integer SqliteConnector::getSumTermFreq(){
-	String sql;
-	std::vector< std::vector<String>> result;
-	int frequency_sum;
-
-	sql = "SELECT SUM( FREQUENCY) FROM QUESTION_TF";
-	result = queryDB(sql.c_str());
-
-	if( result.size() == 0)
-		frequency_sum = 0;
-	else 
-		frequency_sum = atoi( result[ 0].at( 0).c_str());
-
-	sql = "SELECT SUM( FREQUENCY) FROM ANSWER_TF";
-	result = queryDB(sql.c_str());
-
-	if( result.size() == 0)
-		return frequency_sum;
-	else 
-		return frequency_sum + atoi( result[ 0].at( 0).c_str());
-}
-
-const std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag){
-	
-	String sql;
-	std::vector< std::vector< String>> result;
-	sql = "SELECT NAME, FREQUENCY FROM WORD_ID ";
-	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID";
-	sql += " WHERE DOCID='";
-	sql += std::to_string( doc_id);
-	sql += "'";
-	
-	result = queryDB( sql.c_str());
-
-	std::forward_list<Term<String, Integer>> *vec_Term = new std::forward_list<Term<String, Integer>>;
-	for( int n1 = 0 ; n1 < result.size() ; n1++) {
-
-		Term< String, Integer> term;
-		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
-		term.setTermFreq( atoi( result[ n1].at( 1).c_str()));
-
-		vec_Term->push_front( term);
-	}
-	
-	return vec_Term;
-}
 
 //
 std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)
