@@ -280,6 +280,65 @@ Real SqliteConnector::getIDF(String &term, int flag) {
 	}
 }
 
+Integer SqliteConnector::getCountWordID(){
+	String sql;
+	std::vector< std::vector<String>> result;
+
+	sql = "SELECT Count( WORDID) FROM WORD_ID";
+	result = queryDB(sql.c_str());
+
+	if( result.size() == 0)
+		return 0;
+	else 
+		return atoi( result[ 0].at( 0).c_str());
+}
+
+Integer SqliteConnector::getSumTermFreq(){
+	String sql;
+	std::vector< std::vector<String>> result;
+	int frequency_sum;
+
+	sql = "SELECT SUM( FREQUENCY) FROM QUESTION_TF";
+	result = queryDB(sql.c_str());
+
+	if( result.size() == 0)
+		frequency_sum = 0;
+	else 
+		frequency_sum = atoi( result[ 0].at( 0).c_str());
+
+	sql = "SELECT SUM( FREQUENCY) FROM ANSWER_TF";
+	result = queryDB(sql.c_str());
+
+	if( result.size() == 0)
+		return frequency_sum;
+	else 
+		return frequency_sum + atoi( result[ 0].at( 0).c_str());
+}
+
+const std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag){
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	sql = "SELECT NAME, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID";
+	sql += " WHERE DOCID='";
+	sql += std::to_string( doc_id);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	std::forward_list<Term<String, Integer>> *vec_Term = new std::forward_list<Term<String, Integer>>;
+	for( int n1 = 0 ; n1 < result.size() ; n1++) {
+
+		Term< String, Integer> term;
+		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
+		term.setTermFreq( atoi( result[ n1].at( 1).c_str()));
+
+		vec_Term->push_front( term);
+	}
+	
+	return vec_Term;
+}
 
 //
 std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)

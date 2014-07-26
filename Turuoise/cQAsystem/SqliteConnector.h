@@ -41,6 +41,9 @@ public:
 	Integer SqliteConnector::getTF(String &term, Integer doc, int flag);
 	Integer getDF(String &term, int flag);
 	Real getIDF(String &term, int flag);
+	Integer SqliteConnector::getCountWordID();
+	Integer SqliteConnector::getSumTermFreq();
+	const std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag);
 
 private: // Utils
 	std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query);
