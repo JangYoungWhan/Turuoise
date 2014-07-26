@@ -6,6 +6,7 @@
 #include "KoreanMorphologicalAnalyzer.h"
 #include "SqliteConnector.h"
 #include "RapidXmlParser.h"
+#include "ProgressBar.h"
 
 #ifdef _WIN32
 #include "winDirent.h"
@@ -17,9 +18,10 @@
 class BaseTrainer : virtual public KoreanMorphologicalAnalyzer<String, Integer>
 {
 protected:
-	String				mTrainingPath;
-	SqliteConnector*	mSqlConnector;
-	RapidXmlParser*		mXmlParser;
+	String					mTrainingPath;
+	SqliteConnector*		mSqlConnector;
+	RapidXmlParser*			mXmlParser;
+	ProgressBar<Integer>*	mProgressBar;
 
 protected:
 	void readDirectory(const char* srcDir, std::forward_list<String> *ngtPathList)
@@ -53,9 +55,13 @@ public:
 	BaseTrainer() { };
 	BaseTrainer(SqliteConnector* SqlConnector)
 	{
+		this->mProgressBar	= new ProgressBar<Integer>();
 		this->mSqlConnector = SqlConnector;
 	}
-	virtual ~BaseTrainer() { };
+	virtual ~BaseTrainer()
+	{
+		delete mProgressBar;
+	}
 
 	virtual bool beginTraning(String& trainPath) = 0;
 };

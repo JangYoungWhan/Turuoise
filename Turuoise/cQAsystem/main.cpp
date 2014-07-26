@@ -8,24 +8,34 @@
 #include <string>
 #include "QAsystem.h"
 #include "CQAsystem.h"
+#include <time.h>
 
 
 int main(int argc, char* argv[])
 {
+	clock_t start_time, end_time;
+	start_time = clock();
+
 	std::cout << "=== Run Turuoise ===" << std::endl;
 
-	String TRAINING_DATA_PATH = "../training_data/";
+	String TRAINING_DATA_PATH = "../../../../training_data/";
 	String TRAINING_DB_NAME = "Turuoise.db";
 	String QUERY = "못하다는 동사인 줄 알았는데, 형용사로도 쓰인다고 하네요. 형용사 못하다가 어떻게 쓰이는지 딱 떠오르지를 않는데, 좀 알려 주세요.";
 
 	QAsystem *pQAsystem = new CQAsystem(TRAINING_DB_NAME);
 
-	//pQAsystem->beginTraning(TRAINING_DATA_PATH);
+	pQAsystem->beginTraning(TRAINING_DATA_PATH);
+	end_time = clock();
+	std::cout<< "Machine Learning Time : " << static_cast<Real>(end_time-start_time)/CLOCKS_PER_SEC << std::endl << std::endl;
+
 	pQAsystem->analyzeQuery(QUERY);
 	pQAsystem->calculateScore();
-	pQAsystem->dispalyDocsDescendingOrder();
+	pQAsystem->dispalyResult();
 
 	delete pQAsystem;
 
+	
+
+	
 	return 0;
 }

@@ -44,7 +44,7 @@ public:
 	virtual void beginTraning(String& srcDir);
 	virtual void analyzeQuery(String& query);
 	virtual void calculateScore();
-	virtual void dispalyDocsDescendingOrder();
+	virtual void dispalyResult();
 
 };
 

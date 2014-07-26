@@ -23,7 +23,8 @@ private:
 private:
 	bool isDbAccessible();
 	bool createDB();
-	bool makeDB();
+	void setDbConfig();
+	bool makeDB();	
 
 public:
 	SqliteConnector();

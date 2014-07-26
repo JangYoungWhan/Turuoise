@@ -13,6 +13,7 @@ SqliteConnector::SqliteConnector(String &db_name)
 
 SqliteConnector::~SqliteConnector()
 {
+	sqlite3_exec(mSqliteDB, "END TRANSACTION;", NULL, NULL, NULL);
 	sqlite3_close(mSqliteDB);
 }
 
@@ -70,25 +71,39 @@ bool SqliteConnector::createDB()
 	return true;
 }
 
+void SqliteConnector::setDbConfig()
+{
+	sqlite3_exec(mSqliteDB, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+	sqlite3_exec(mSqliteDB, "PRAGMA synchronous=OFF", NULL, NULL, NULL);
+	sqlite3_exec(mSqliteDB, "PRAGMA journal_mode=OFF", NULL, NULL, NULL);
+	sqlite3_exec(mSqliteDB, "PRAGMA locking_mode=exclusive", NULL, NULL, NULL);
+	sqlite3_exec(mSqliteDB, "PRAGMA temp_store=OFF", NULL, NULL, NULL);
+}
+
 bool SqliteConnector::makeDB()
 {
-	if(createDB())
+	if(createDB()) {
+		setDbConfig();
 		return true;
+	}
 	else
 		return false;
 }
 
+
 bool SqliteConnector::openDB()
 {
-	if( sqlite3_open( mDbName.c_str(), &mSqliteDB) == 0)
+	if( sqlite3_open( mDbName.c_str(), &mSqliteDB) == 0) {
+		setDbConfig();
 		return true;
+	}
 	else
 		return false;
 }
 
 bool SqliteConnector::initDB()
 {
-	if(isDbAccessible())
+	if(!isDbAccessible())
 	{
 		if(makeDB())
 			return true;
