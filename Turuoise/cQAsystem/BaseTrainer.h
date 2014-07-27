@@ -63,7 +63,7 @@ public:
 		delete mProgressBar;
 	}
 
-	virtual bool beginTraning(String& trainPath) = 0;
+	virtual bool beginTraning(String& trainPath, std::map<Integer, String>& docID2Path) = 0;
 };
 
 

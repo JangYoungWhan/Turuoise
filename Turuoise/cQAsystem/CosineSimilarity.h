@@ -8,13 +8,14 @@
 #include "Term.h"
 #include "ScoreCalculator.h"
 #include "SqliteConnector.h"
+#include "DocInfo.h"
 
 
 class CosineSimilarity : public ScoreCalculator
 {
 public:
 	CosineSimilarity();
-	CosineSimilarity(SqliteConnector* SqlConnector);
+	CosineSimilarity(Integer numOfDoc, SqliteConnector* SqlConnector);
 	virtual ~CosineSimilarity();
 
 public:

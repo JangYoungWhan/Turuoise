@@ -2,8 +2,8 @@
 
 CosineSimilarity::CosineSimilarity()
 { }
-CosineSimilarity::CosineSimilarity(SqliteConnector* SqlConnector)
-	:ScoreCalculator(SqlConnector)
+CosineSimilarity::CosineSimilarity(Integer numOfDoc, SqliteConnector* SqlConnector)
+	:ScoreCalculator(numOfDoc, SqlConnector)
 { }
 CosineSimilarity::~CosineSimilarity()
 { }

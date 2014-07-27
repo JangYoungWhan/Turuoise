@@ -13,7 +13,7 @@ public:
 	FreqBasedTrainer(SqliteConnector* SqlConnector);
 	virtual ~FreqBasedTrainer();
 
-	virtual bool beginTraning(String& trainingPath);
+	virtual bool beginTraning(String& trainingPath, std::map<Integer, String>& docID2Path);
 };
 
 

@@ -73,26 +73,6 @@ bool RapidXmlParser::runParsing()
 	
 	mQuestionColumn		= question_node->value();
 	mAnswerColumn		= answer_node->value();
-	//mQuestionColumn	= UTF8ToANSI( question_node->value());
-	//mAnswerColumn	= UTF8ToANSI( answer_node->value());
-	/*
-	tool->pLearner->extractFromStr( UTF8ToANSI( question_node->value()));
-	const std::list<std::string>* extractWords = tool->pLearner->getExtractReuslt();
-
-	if( updateDB( tool->db, extractWords, QUESTION) == false) {
-		std::cout << ">> db 업데이트 실패, " << sqlite3_errmsg( tool->db) << std::endl;
-		return false;
-	}
-	
-
-	tool->pLearner->initList();
-	tool->pLearner->extractFromStr( UTF8ToANSI( answer_node->value()));
-	extractWords = tool->pLearner->getExtractReuslt();
-	
-	if( updateDB( tool->db, extractWords, ANSWER) == false) {
-		std::cout << ">> db 업데이트 실패, " << sqlite3_errmsg( tool->db) << std::endl;
-		return false;
-	}*/
 
 	return true;
 }

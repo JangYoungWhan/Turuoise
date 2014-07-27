@@ -410,6 +410,7 @@ std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfoFlist(Integ
 		Term< String, Integer> term;
 		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
 		term.setTermFreq( atoi( result[ n1].at( 1).c_str()));
+		term.setScore( 0);
 
 		vec_Term->push_front( term);
 	}
@@ -435,11 +436,36 @@ std::set<Term<String, Integer>>* SqliteConnector::getDocInfoSet(Integer doc_id, 
 		Term< String, Integer> term;
 		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
 		term.setTermFreq( atoi( result[ n1].at( 1).c_str()));
+		term.setScore( 0);
 
 		set_Term->insert( term);
 	}
 	
 	return set_Term;
+}
+
+std::map<String, FreqScore<Integer, Integer>>* SqliteConnector::getDocInfoMap(Integer doc_id, int flag){
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	sql = "SELECT NAME, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID";
+	sql += " WHERE DOCID='";
+	sql += std::to_string( doc_id);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	std::map<String, FreqScore<Integer, Integer>> *map_Term = new std::map<String, FreqScore<Integer, Integer>>();
+	for( auto n1 = 0 ; n1 < result.size() ; n1++) {
+
+		FreqScore<Integer, Integer> freq_score(atoi( result[ n1].at( 1).c_str()), 0);
+		std::pair<String, FreqScore<Integer, Integer>> term_pair(UTF8ToANSI( result[ n1].at( 0).c_str()), freq_score);
+
+		map_Term->insert( term_pair);
+	}
+	
+	return map_Term;
 }
 //
 std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)

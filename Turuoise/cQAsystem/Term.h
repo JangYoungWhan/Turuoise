@@ -51,9 +51,9 @@ template <typename T_str, typename T_int>
 bool Term<T_str, T_int>::operator>(const Term<T_str, T_int> &rhs) const
 {
 	if(this->mTerm > rhs.mTerm)
-		return true;
-	else
 		return false;
+	else
+		return true;
 }
 
 template <typename T_str, typename T_int>
@@ -68,10 +68,10 @@ bool Term<T_str, T_int>::operator==(const Term<T_str, T_int> &rhs) const
 template <typename T_str, typename T_int>
 bool Term<T_str, T_int>::operator!=(const Term<T_str, T_int> &rhs) const
 {
-	if(*this == rhs)
-		return false;
-	else
+	if(this->mTerm != rhs)
 		return true;
+	else
+		return false;
 }
 
 

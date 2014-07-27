@@ -3,6 +3,7 @@
 
 
 #include <forward_list>
+#include <algorithm>
 #include "QAsystem.h"
 #include "SqliteConnector.h"
 #include "BaseTrainer.h"
@@ -12,13 +13,7 @@
 #include "ScoreCalculator.h"
 #include "CosineSimilarity.h"
 #include "NaiveBeysian.h"
-
-
-struct DocInfo
-{
-	Integer docID; // Q-A paired XML file name. It have to be integer value.
-	Real	score; // Score of the file satisfied that query.
-};
+#include "DocInfo.h"
 
 
 class CQAsystem : public QAsystem
@@ -27,9 +22,10 @@ private:
 	String mDbName;
 
 private:
+	std::map<Integer, String>					mDocId2DocPath;
 	std::forward_list<Term<String, Integer>>	*mFlstQueryResult;
 	std::set<Term<String, Integer>>				*mSetQueryResult;
-	std::forward_list<DocInfo>					*mScoreResult; // It needs partial sorting.
+	std::vector<DocInfo>						mScoreResult; // It needs partial sorting.
 
 private:
 	SqliteConnector*	mSqliteConnector;
@@ -37,6 +33,9 @@ private:
 	QueryAnalyzer*		mQueryAnalyzer;
 	ScoreCalculator*	mScoreCalculator;
 	void*				mOutputPrinter; // it does not defined yet
+
+private:
+	const String& getXmlPathFromDocID(Integer doc_id) const;
 
 public:
 	CQAsystem();
@@ -47,7 +46,7 @@ public:
 	virtual void beginTraning(String& srcDir);
 	virtual void analyzeQuery(String& query);
 	virtual void calculateScore();
-	virtual void dispalyResult();
+	virtual void dispalyResult(const Integer show_limit);
 
 };
 

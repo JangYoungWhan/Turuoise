@@ -17,7 +17,7 @@ FreqBasedTrainer::~FreqBasedTrainer()
 }
 
 
-bool FreqBasedTrainer::beginTraning(String& trainingPath)
+bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, String>& docID2Path)
 {
 	std::cout << "beginTraning" << std::endl;
 
@@ -29,6 +29,9 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath)
 	auto numOfFiles = std::distance(pFlist->begin(), pFlist->end())-1;
 	for(String& xmlFile : *pFlist)
 	{
+		std::pair<Integer, String> int2str_pair(cur_progress, xmlFile);
+		docID2Path.insert(int2str_pair);
+
 		mProgressBar->dispalyPrgressBar(cur_progress++, numOfFiles);
 		mXmlParser = new RapidXmlParser(xmlFile);
 		mXmlParser->runParsing();

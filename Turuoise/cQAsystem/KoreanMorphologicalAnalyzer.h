@@ -4,8 +4,10 @@
 
 #include <iostream>
 #include <forward_list>
+#include <map>
 #include <set>
 #include "Term.h"
+#include "FreqScore.h"
 
 extern "C"
 {
@@ -23,7 +25,7 @@ private:
 protected:
 	std::forward_list<Term<T_str, T_int>>* extractIndex2Flist(char* text);
 	std::set<Term<T_str, T_int>>* extractIndex2Set(char* text);
-
+	std::map<T_str, FreqScore<T_int, T_int>>* extractIndex2Map(char* text);
 public:
 	KoreanMorphologicalAnalyzer();
 	virtual ~KoreanMorphologicalAnalyzer();
@@ -93,6 +95,27 @@ std::set<Term<T_str, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_int>::extract
 	}
 
 	return pSetExtractResult;
+}
+
+template <typename T_str, typename T_int>
+std::map<T_str, FreqScore<T_int, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_int>::extractIndex2Map(char* text)
+{
+	std::map<T_str, FreqScore<T_int, T_int>>* pMapExtractResult = new std::map<T_str, FreqScore<T_int, T_int>>();
+	int n;
+	n = get_terms_text(reinterpret_cast<unsigned char*>(text), mTerm, &mTM, &mMode, 0, 2, 1);
+
+	for(int i=0; i<n; i++)
+	{
+		
+
+		std::string currentTerm((const char*)mTM.memTermString+mTerm[i].offset);
+		FreqScore<T_int, T_int> freq_score(term.setTermFreq(static_cast<T_int>(mTerm[i].tf)), term.setScore(mTerm[i].score));
+		std::pair<T_str, FreqScore<T_int, T_int>> term_pair(currentTerm, freq_score);
+
+		pMapExtractResult->insert(term_pair);
+	}
+
+	return pMapExtractResult;
 }
 
 template <typename T_str, typename T_int>

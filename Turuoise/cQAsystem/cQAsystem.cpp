@@ -6,7 +6,6 @@ CQAsystem::CQAsystem()
 {
 	this->mFlstQueryResult			= nullptr;
 	this->mSetQueryResult			= nullptr;
-	this->mScoreResult				= new std::forward_list<DocInfo>();
 
 	this->mTrainer					= nullptr;
 	this->mQueryAnalyzer			= nullptr;
@@ -17,7 +16,6 @@ CQAsystem::CQAsystem(String& dbName)
 {
 	this->mFlstQueryResult			= nullptr;
 	this->mSetQueryResult			= nullptr;
-	this->mScoreResult				= new std::forward_list<DocInfo>();
 
 	this->mTrainer					= nullptr;
 	this->mQueryAnalyzer			= nullptr;
@@ -27,7 +25,6 @@ CQAsystem::~CQAsystem()
 {
 	delete this->mFlstQueryResult;
 	delete this->mSetQueryResult;
-	delete this->mScoreResult;
 }
 
 void CQAsystem::beginTraning(String& srcDir)
@@ -37,7 +34,7 @@ void CQAsystem::beginTraning(String& srcDir)
 
 	std::cout << "Ready to beginTraning" << std::endl;
 	mTrainer = new FreqBasedTrainer(mSqliteConnector);
-	mTrainer->beginTraning(srcDir);
+	mTrainer->beginTraning(srcDir, mDocId2DocPath);
 	std::cout << "Training complete" << std::endl << std::endl;
 
 	delete mTrainer;
@@ -60,18 +57,69 @@ void CQAsystem::calculateScore()
 	mSqliteConnector = new SqliteConnector(mDbName);
 	mSqliteConnector->openDB();
 
+	//mSqliteConnector->updateDocId2Path(mDocId2DocPath); // Do implement plz
+	auto numOfDocs = mDocId2DocPath.size();
+
 	std::cout << "Ready to calculateScore" << std::endl;
+
 	//mScoreCalculator = new CosineSimilarity(mSqliteConnector);
-	mScoreCalculator = new NaiveBeysian(mSqliteConnector);
-	mScoreCalculator->beginScoring(mSetQueryResult);
+	mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
+	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult);
+
 	std::cout << "Scoring complete" << std::endl << std::endl;
 
 	delete mQueryAnalyzer;
 	delete mScoreCalculator;
 	delete mSqliteConnector;
 }
-void CQAsystem::dispalyResult()
+
+const String& CQAsystem::getXmlPathFromDocID(Integer doc_id) const
+{
+	auto find_result = mDocId2DocPath.find(doc_id);
+
+	return find_result->second;
+}
+
+bool greater_score(DocInfo &a, DocInfo &b)
+{
+	return a.getScore() > b.getScore();
+}
+
+int qsort_compare(const void* a, const void* b)
+{
+	if(((DocInfo*)b)->getScore() - ((DocInfo*)a)->getScore() > EPSILON)
+		return 1;
+	else
+		return -1;
+}
+
+void CQAsystem::dispalyResult(const Integer show_limit)
 {
 	std::cout << "Ready to dispalyResult" << std::endl;
+	std::partial_sort(mScoreResult.begin(), mScoreResult.begin()+show_limit, mScoreResult.end());
+	//std::sort(mScoreResult.begin(), mScoreResult.begin(), greater_score);
+	//qsort(&mScoreResult, 500, sizeof(DocInfo), qsort_compare);
+
+	for(auto i=0; i<show_limit; i++)
+	{
+		auto file_name = getXmlPathFromDocID(mScoreResult[i].getDocID());
+		rapidxml::file<> xml_file(file_name.c_str());
+		rapidxml::xml_document<> xml_doc;
+
+		xml_doc.parse<0>(xml_file.data());
+
+		rapidxml::xml_node<char> *data_node = xml_doc.first_node("data");
+
+		rapidxml::xml_node<char> *question_node = data_node->first_node("question");;
+		rapidxml::xml_node<char> *answer_node = data_node->first_node("answer");
+
+		std::cout << "=== Rank " << i+1 << " (Score:" << mScoreResult[i] << ") ===" << std::endl;
+
+		std::cout << "== Question ==" << std::endl;
+		std::cout << mSqliteConnector->UTF8ToANSI(question_node->value()) << std::endl;
+		std::cout << "== Answer ==" << std::endl;
+		std::cout << mSqliteConnector->UTF8ToANSI(answer_node->value()) << std::endl;
+		std::cout << "---------------------------------------------------------------" << std::endl;
+	}
 	std::cout << "=== Done ===" << std::endl << std::endl;
 }
