@@ -39,10 +39,10 @@ public:
 	bool closeDB();
 
 public:
-	Integer getWordID(String &term);
-	Integer SqliteConnector::getTF(String &term, Integer doc, int flag);
-	Integer getDF(String &term, int flag);
-	Real getIDF(String &term, int flag);
+	Integer getWordID(const String &term);
+	Integer SqliteConnector::getTF(const String &term, Integer doc, int flag);
+	Integer getDF(const String &term, int flag);
+	Real getIDF(const String &term, int flag);
 	Integer SqliteConnector::getCountWordID();
 	Integer SqliteConnector::getSumTermFreq();
 	std::forward_list<Term<String, Integer>>* getDocInfoFlist(Integer doc_id, int flag);

@@ -284,7 +284,7 @@ bool SqliteConnector::closeDB() {
 	return true;
 }
 
-Integer SqliteConnector::getWordID(String &term)
+Integer SqliteConnector::getWordID(const String &term)
 {
 	String  sql;
 	sql = "SELECT WORDID FROM WORD_ID WHERE NAME='";
@@ -299,7 +299,7 @@ Integer SqliteConnector::getWordID(String &term)
 }
 
 
-Integer SqliteConnector::getTF(String &term, Integer doc, int flag)
+Integer SqliteConnector::getTF(const String &term, Integer doc, int flag)
 {
 	String  sql;
 	sql = "SELECT FREQUENCY FROM WORD_ID ";
@@ -316,7 +316,7 @@ Integer SqliteConnector::getTF(String &term, Integer doc, int flag)
 }
 
 
-Integer SqliteConnector::getDF(String &term, int flag) {
+Integer SqliteConnector::getDF(const String &term, int flag) {
 	
 	String  sql;
 	sql = "SELECT FREQUENCY FROM WORD_ID ";
@@ -333,7 +333,7 @@ Integer SqliteConnector::getDF(String &term, int flag) {
 }
 
 
-Real SqliteConnector::getIDF(String &term, int flag) {
+Real SqliteConnector::getIDF(const String &term, int flag) {
 	
 	String  sql;
 	sql = "SELECT FREQUENCY FROM WORD_ID ";
