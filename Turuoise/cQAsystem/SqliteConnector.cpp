@@ -202,6 +202,83 @@ bool SqliteConnector::updateDB(const std::forward_list<Term<String, Integer>>* w
 	return true;
 }
 
+bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int flag){
+
+	String sql;
+	std::vector< std::vector<String>> result;
+
+	std::map< Integer, Integer> map_id_freqeuncy;
+	for( auto iter = words->begin() ; iter != words->end(); iter++) {
+		//std::cout << *iter << std::endl;
+		
+		sql = "SELECT WORDID FROM WORD_ID WHERE NAME='";
+		sql += ANSIToUTF8( iter->getTerm().c_str());
+		sql += "'";
+		result = queryDB(sql.c_str());
+		if( result.size() == 0) {
+			sql = "SELECT Count( WORDID) FROM WORD_ID";
+			result = queryDB(sql.c_str());
+		
+			sql = "INSERT INTO WORD_ID VALUES( " + result[0].at( 0) + ", '";
+			sql += ANSIToUTF8( iter->getTerm().c_str());
+			sql += "')";
+			queryDB(sql.c_str());
+		}
+
+		if( map_id_freqeuncy.find( atoi( result[0].at( 0).c_str())) == map_id_freqeuncy.end()) {
+			map_id_freqeuncy.insert( std::make_pair( atoi( result[0].at( 0).c_str()), iter->getTermFreq()));
+		}
+		else {
+			map_id_freqeuncy[ atoi( result[0].at( 0).c_str())]++;
+		}
+	}
+
+
+	sql = "SELECT COUNT( DOCID) FROM ";
+	sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
+	result = queryDB(sql.c_str());
+	int doc_number;
+	if( atoi( result[ 0].at( 0).c_str()) == 0)
+		doc_number = 0;
+	else {
+		sql = "SELECT MAX( DOCID) FROM ";
+		sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
+		result = queryDB(sql.c_str());
+		doc_number = atoi( result[ 0].at( 0).c_str()) + 1;
+	}
+
+	for( auto iter = map_id_freqeuncy.begin() ; iter != map_id_freqeuncy.end() ; iter++) {
+		sql = "SELECT * FROM ";
+		sql += ( flag == QUESTION)?	"QUESTION_DF" : "ANSWER_DF";
+		sql +=	" WHERE WORDID=";
+		sql += std::to_string( iter->first);
+
+		result = queryDB(sql.c_str());
+		if( result.size() == 0) {
+			sql = "INSERT INTO ";
+			sql += ( flag == QUESTION)?	"QUESTION_DF" : "ANSWER_DF";
+			sql += " VALUES( " + std::to_string( iter->first) + ", 1)";
+			queryDB(sql.c_str());
+		} else {
+			sql = "UPDATE ";
+			sql += ( flag == QUESTION)?	"QUESTION_DF" : "ANSWER_DF";
+			sql += " SET FREQUENCY=";
+			sql += std::to_string( atoi( result[0].at(1).c_str()) + 1);
+			sql +=	" WHERE WORDID=";
+			sql += std::to_string( iter->first);
+			queryDB(sql.c_str());
+		}
+
+				
+		sql = "INSERT INTO ";
+		sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
+		sql += " VALUES( " + std::to_string( doc_number) + ", " + std::to_string( iter->first) + ", " + std::to_string( iter->second) + ")";
+		queryDB(sql.c_str());
+
+	}
+	return true;
+}
+
 bool SqliteConnector::closeDB() {
 	sqlite3_close(mSqliteDB);
 	return true;
@@ -315,7 +392,7 @@ Integer SqliteConnector::getSumTermFreq(){
 		return frequency_sum + atoi( result[ 0].at( 0).c_str());
 }
 
-std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag){
+std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfoFlist(Integer doc_id, int flag){
 	
 	String sql;
 	std::vector< std::vector< String>> result;
@@ -340,6 +417,30 @@ std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer do
 	return vec_Term;
 }
 
+std::set<Term<String, Integer>>* SqliteConnector::getDocInfoSet(Integer doc_id, int flag){
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	sql = "SELECT NAME, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID";
+	sql += " WHERE DOCID='";
+	sql += std::to_string( doc_id);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	std::set<Term<String, Integer>> *set_Term = new std::set<Term<String, Integer>>;
+	for( auto n1 = 0 ; n1 < result.size() ; n1++) {
+
+		Term< String, Integer> term;
+		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
+		term.setTermFreq( atoi( result[ n1].at( 1).c_str()));
+
+		set_Term->insert( term);
+	}
+	
+	return set_Term;
+}
 //
 std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)
 {

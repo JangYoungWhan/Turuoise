@@ -4,7 +4,8 @@
 CQAsystem::CQAsystem()
 	:mDbName("Turuoise.db")
 {
-	this->mQueryResult				= nullptr;
+	this->mFlstQueryResult			= nullptr;
+	this->mSetQueryResult			= nullptr;
 	this->mScoreResult				= new std::forward_list<DocInfo>();
 
 	this->mTrainer					= nullptr;
@@ -14,7 +15,8 @@ CQAsystem::CQAsystem()
 CQAsystem::CQAsystem(String& dbName)
 	: mDbName(dbName)
 {
-	this->mQueryResult				= nullptr;
+	this->mFlstQueryResult			= nullptr;
+	this->mSetQueryResult			= nullptr;
 	this->mScoreResult				= new std::forward_list<DocInfo>();
 	this->mScoreResult				= nullptr;
 
@@ -24,7 +26,8 @@ CQAsystem::CQAsystem(String& dbName)
 
 CQAsystem::~CQAsystem()
 {
-	delete this->mQueryResult;
+	delete this->mFlstQueryResult;
+	delete this->mSetQueryResult;
 	delete this->mScoreResult;
 }
 
@@ -48,7 +51,7 @@ void CQAsystem::analyzeQuery(String& query)
 
 	std::cout << "Ready to analyzeQuery" << std::endl;
 	mQueryAnalyzer = new QryAnalCosSim();
-	mQueryAnalyzer->beginQueryAnalysis(query, &mQueryResult);
+	mQueryAnalyzer->beginQueryAnalysis(query, &mSetQueryResult);
 	std::cout << "Query analysis complete" << std::endl << std::endl;
 
 	delete mSqliteConnector;
@@ -61,7 +64,7 @@ void CQAsystem::calculateScore()
 	std::cout << "Ready to calculateScore" << std::endl;
 	//mScoreCalculator = new CosineSimilarity(mSqliteConnector);
 	mScoreCalculator = new NaiveBeysian(mSqliteConnector);
-	mScoreCalculator->beginScoring(mQueryResult);
+	mScoreCalculator->beginScoring(mSetQueryResult);
 	std::cout << "Scoring complete" << std::endl << std::endl;
 
 	delete mQueryAnalyzer;

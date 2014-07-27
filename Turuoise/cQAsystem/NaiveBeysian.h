@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <forward_list>
+#include <set>
 #include "StdRedef.h"
 #include "Term.h"
 #include "SqliteConnector.h"
@@ -12,8 +13,8 @@
 class NaiveBeysian : public ScoreCalculator
 {
 private:
-	std::forward_list<Term<String, Integer>>	*mFlstDocInfoInQuestion;
-	std::forward_list<Term<String, Integer>>	*mFlstDocInfoInAnswer;
+	std::set<Term<String, Integer>>	*mSetDocInfoInQuestion;
+	std::set<Term<String, Integer>>	*mSetDocInfoInAnswer;
 
 public:
 	NaiveBeysian();
@@ -22,6 +23,7 @@ public:
 
 public:
 	virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result);
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result);
 };
 
 

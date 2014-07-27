@@ -1,8 +1,7 @@
 /*
- * Title	: It just my memo
+ * Title	: CQA system implemented in C++
  * Author	: YW. Jang, Zizo
  */
-// DEBUG : io-defs.h(78) unicode redef
 
 #include <iostream>
 #include <string>

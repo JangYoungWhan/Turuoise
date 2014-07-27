@@ -27,6 +27,7 @@ public:
 
 public:
 	virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result) = 0;
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result) = 0;
 };
 
 

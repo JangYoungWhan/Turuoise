@@ -27,7 +27,8 @@ private:
 	String mDbName;
 
 private:
-	std::forward_list<Term<String, Integer>>	*mQueryResult;
+	std::forward_list<Term<String, Integer>>	*mFlstQueryResult;
+	std::set<Term<String, Integer>>				*mSetQueryResult;
 	std::forward_list<DocInfo>					*mScoreResult; // It needs partial sorting.
 
 private:

@@ -9,6 +9,7 @@ class QueryAnalyzer : virtual public KoreanMorphologicalAnalyzer<String, Integer
 {
 public:
 	virtual void beginQueryAnalysis(String& query, std::forward_list<Term<String, Integer>> **query_result) = 0;
+	virtual void beginQueryAnalysis(String& query, std::set<Term<String, Integer>> **query_result) = 0;
 };
 
 

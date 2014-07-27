@@ -3,6 +3,7 @@
 
 
 #include <forward_list>
+#include <set>
 #include "StdRedef.h"
 #include "Term.h"
 #include "ScoreCalculator.h"
@@ -18,6 +19,7 @@ public:
 
 public:
 	virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result);
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result);
 };
 
 

@@ -15,6 +15,7 @@ public:
 
 public:
 	virtual void beginQueryAnalysis(String& query, std::forward_list<Term<String, Integer>> **query_result);
+	virtual void beginQueryAnalysis(String& query, std::set<Term<String, Integer>> **query_result);
 };
 
 

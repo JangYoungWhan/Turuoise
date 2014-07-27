@@ -9,6 +9,7 @@
 #include <Windows.h>
 #include <forward_list>
 #include <map>
+#include <set>
 #include "sqlite/sqlite3.h"
 #include "StdRedef.h"
 #include "Term.h"
@@ -34,6 +35,7 @@ public:
 	bool openDB();
 	bool initDB();
 	bool updateDB( const std::forward_list<Term<String, Integer>>* words, int flag);
+	bool updateDB( const std::set<Term<String, Integer>>* words, int flag);
 	bool closeDB();
 
 public:
@@ -43,7 +45,8 @@ public:
 	Real getIDF(String &term, int flag);
 	Integer SqliteConnector::getCountWordID();
 	Integer SqliteConnector::getSumTermFreq();
-	std::forward_list<Term<String, Integer>>* getDocInfo(Integer doc_id, int flag);
+	std::forward_list<Term<String, Integer>>* getDocInfoFlist(Integer doc_id, int flag);
+	std::set<Term<String, Integer>>* getDocInfoSet(Integer doc_id, int flag);
 
 private: // Utils
 	std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query);
