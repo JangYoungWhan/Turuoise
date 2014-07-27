@@ -29,7 +29,6 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath)
 	auto numOfFiles = std::distance(pFlist->begin(), pFlist->end())-1;
 	for(String& xmlFile : *pFlist)
 	{
-		//std::cout << xmlFile << " : Training..." << std::endl;
 		mProgressBar->dispalyPrgressBar(cur_progress++, numOfFiles);
 		mXmlParser = new RapidXmlParser(xmlFile);
 		mXmlParser->runParsing();
@@ -44,6 +43,7 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath)
 		if(!mSqlConnector->updateDB(extractWords, ANSWER))
 			return false;
 
+		delete extractWords;
 		delete mXmlParser;
 	}
 	delete pFlist;

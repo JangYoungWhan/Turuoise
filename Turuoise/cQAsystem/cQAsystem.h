@@ -26,7 +26,8 @@ private:
 	String mDbName;
 
 private:
-	std::forward_list<DocInfo> *mScoreResult; // It needs partial sorting.
+	std::forward_list<Term<String, Integer>>	*mQueryResult;
+	std::forward_list<DocInfo>					*mScoreResult; // It needs partial sorting.
 
 private:
 	SqliteConnector*	mSqliteConnector;
@@ -37,7 +38,7 @@ private:
 
 public:
 	CQAsystem();
-	CQAsystem(String& dbName) : mDbName(dbName) { };
+	CQAsystem(String& dbName);
 	virtual ~CQAsystem();
 
 public:

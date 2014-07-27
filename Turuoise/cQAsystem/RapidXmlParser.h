@@ -8,10 +8,6 @@
 #include "xml_parser\rapidxml_iterators.hpp"
 #include "xml_parser\rapidxml_utils.hpp"
 
-//const char* DATA_TAG		= "data";
-//const char* QUESTION_TAG	= "question";
-//const char* ANSWER_TAG		= "answer";
-
 
 class RapidXmlParser
 {

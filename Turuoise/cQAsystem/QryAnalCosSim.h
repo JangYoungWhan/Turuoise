@@ -9,15 +9,13 @@
 
 class QryAnalCosSim : public QueryAnalyzer
 {
-private:
-	std::forward_list<Term<String, Integer>> mQueryResult;
+public:
+	QryAnalCosSim();
+	virtual ~QryAnalCosSim();
 
 public:
-	virtual void beginQueryAnalysis(String& query);
-
-	std::forward_list<Term<String, Integer>>& getQueryResult() const;
+	virtual void beginQueryAnalysis(String& query, std::forward_list<Term<String, Integer>> **query_result);
 };
-
 
 
 #endif
