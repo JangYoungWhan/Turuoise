@@ -4,7 +4,7 @@
 CQAsystem::CQAsystem()
 	:mDbName("Turuoise.db")
 {
-	this->mQueryResult				= new std::forward_list<Term<String, Integer>>();//nullptr;
+	this->mQueryResult				= nullptr;
 	this->mScoreResult				= new std::forward_list<DocInfo>();
 
 	this->mTrainer					= nullptr;
@@ -14,7 +14,7 @@ CQAsystem::CQAsystem()
 CQAsystem::CQAsystem(String& dbName)
 	: mDbName(dbName)
 {
-	this->mQueryResult				= new std::forward_list<Term<String, Integer>>();
+	this->mQueryResult				= nullptr;
 	this->mScoreResult				= new std::forward_list<DocInfo>();
 	this->mScoreResult				= nullptr;
 
@@ -59,8 +59,9 @@ void CQAsystem::calculateScore()
 	mSqliteConnector->openDB();
 
 	std::cout << "Ready to calculateScore" << std::endl;
-	mScoreCalculator = new CosineSimilarity();
-	mScoreCalculator->beginScoring();
+	//mScoreCalculator = new CosineSimilarity(mSqliteConnector);
+	mScoreCalculator = new NaiveBeysian(mSqliteConnector);
+	mScoreCalculator->beginScoring(mQueryResult);
 	std::cout << "Scoring complete" << std::endl << std::endl;
 
 	delete mQueryAnalyzer;

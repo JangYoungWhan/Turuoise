@@ -11,6 +11,7 @@
 #include "QryAnalCosSim.h"
 #include "ScoreCalculator.h"
 #include "CosineSimilarity.h"
+#include "NaiveBeysian.h"
 
 
 struct DocInfo

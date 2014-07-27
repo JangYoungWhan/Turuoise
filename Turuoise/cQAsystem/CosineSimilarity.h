@@ -2,13 +2,22 @@
 #define _COSINE_SIMILARITY_H_
 
 
-#include <iostream> // for naive debug!
+#include <forward_list>
+#include "StdRedef.h"
+#include "Term.h"
 #include "ScoreCalculator.h"
+#include "SqliteConnector.h"
 
 
 class CosineSimilarity : public ScoreCalculator
 {
-	virtual void beginScoring();
+public:
+	CosineSimilarity();
+	CosineSimilarity(SqliteConnector* SqlConnector);
+	virtual ~CosineSimilarity();
+
+public:
+	virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result);
 };
 
 
