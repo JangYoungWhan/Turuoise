@@ -59,7 +59,7 @@ bool Term<T_str, T_int>::operator>(const Term<T_str, T_int> &rhs) const
 template <typename T_str, typename T_int>
 bool Term<T_str, T_int>::operator==(const Term<T_str, T_int> &rhs) const
 {
-	if(this->mTerm == rhs.mTerm && this->mTermFreq == rhs.mTermFreq && this->score == rhs.score)
+	if(this->mTerm == rhs.mTerm)
 		return true;
 	else
 		return false;
@@ -68,7 +68,7 @@ bool Term<T_str, T_int>::operator==(const Term<T_str, T_int> &rhs) const
 template <typename T_str, typename T_int>
 bool Term<T_str, T_int>::operator!=(const Term<T_str, T_int> &rhs) const
 {
-	if(lhs == rhs)
+	if(*this == rhs)
 		return false;
 	else
 		return true;
