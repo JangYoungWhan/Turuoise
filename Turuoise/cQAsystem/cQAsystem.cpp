@@ -18,7 +18,6 @@ CQAsystem::CQAsystem(String& dbName)
 	this->mFlstQueryResult			= nullptr;
 	this->mSetQueryResult			= nullptr;
 	this->mScoreResult				= new std::forward_list<DocInfo>();
-	this->mScoreResult				= nullptr;
 
 	this->mTrainer					= nullptr;
 	this->mQueryAnalyzer			= nullptr;
