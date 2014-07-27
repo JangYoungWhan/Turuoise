@@ -315,7 +315,7 @@ Integer SqliteConnector::getSumTermFreq(){
 		return frequency_sum + atoi( result[ 0].at( 0).c_str());
 }
 
-const std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag){
+std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag){
 	
 	String sql;
 	std::vector< std::vector< String>> result;
@@ -328,7 +328,7 @@ const std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Inte
 	result = queryDB( sql.c_str());
 
 	std::forward_list<Term<String, Integer>> *vec_Term = new std::forward_list<Term<String, Integer>>;
-	for( int n1 = 0 ; n1 < result.size() ; n1++) {
+	for( auto n1 = 0 ; n1 < result.size() ; n1++) {
 
 		Term< String, Integer> term;
 		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
@@ -371,39 +371,6 @@ std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)
     if( error != "not an error") std::cout << query << " " << error << std::endl;
      
     return results;  
-}
-
-bool SqliteConnector::searchDirectory( String &folder_path, bool (*doSomething)( String, void *data), void *data)
-{
-    _finddata_t fd;
-    long handle;
-    int result = 1;
-
-	String folder_find_all = folder_path + "*.*";
-	handle = _findfirst( folder_find_all.c_str(), &fd);  //현재 폴더 내 모든 파일을 찾는다.
- 
-    if ( handle == -1) {
-        printf(">> There were no files.\n");
-        return false;
-    }
- 
-    while ( result != -1) {
-        printf( ">> File: %s\n", fd.name);
-
-		if( hasEnding ( fd.name, ".xml") == true) {
-			String file_path = folder_path + fd.name;
-
-			if( doSomething( file_path, data) == false) {
-				_findclose( handle);
-				return false;
-			}
-		}
-		
-        result = _findnext( handle, &fd);
-    }
- 
-    _findclose( handle);
-    return true;
 }
 
 char* SqliteConnector::UTF8ToANSI( const char *pszCode)

@@ -43,11 +43,10 @@ public:
 	Real getIDF(String &term, int flag);
 	Integer SqliteConnector::getCountWordID();
 	Integer SqliteConnector::getSumTermFreq();
-	const std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfo(Integer doc_id, int flag);
+	std::forward_list<Term<String, Integer>>* getDocInfo(Integer doc_id, int flag);
 
 private: // Utils
 	std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query);
-	bool SqliteConnector::searchDirectory( String &folder_path, bool (*doSomething)( String, void *data), void *data);
 	bool SqliteConnector::hasEnding(String const &fullString, String const &ending);
 
 public: // Utils
