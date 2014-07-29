@@ -21,7 +21,7 @@ Real DocInfo::getScore() const
 
 bool DocInfo::operator<(const DocInfo &rhs) const
 {
-	if(fabs(this->mScore - rhs.getScore()) < EPSILON)
+	if(this->mScore - rhs.getScore() < EPSILON)
 		return false;
 	else
 		return true;
@@ -29,7 +29,7 @@ bool DocInfo::operator<(const DocInfo &rhs) const
 
 bool DocInfo::operator>(const DocInfo &rhs) const
 {
-	if(fabs(this->mScore - rhs.getScore()) > EPSILON)
+	if(this->mScore - rhs.getScore() > EPSILON)
 		return true;
 	else
 		return false;

@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
 	pQAsystem->analyzeQuery(QUERY);
 	pQAsystem->calculateScore();
-	//pQAsystem->dispalyResult(DISPLAY_LIMIT);
+	pQAsystem->dispalyResult(DISPLAY_LIMIT);
 
 	delete pQAsystem;
 
