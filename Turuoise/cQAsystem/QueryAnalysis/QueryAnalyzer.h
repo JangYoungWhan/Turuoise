@@ -2,8 +2,8 @@
 #define _QUERY_ANALYZER_H_
 
 
-#include "StdRedef.h"
-#include "KoreanMorphologicalAnalyzer.h"
+#include "../Utils/StdRedef.h"
+#include "../Utils/KoreanMorphologicalAnalyzer.h"
 
 class QueryAnalyzer : virtual public KoreanMorphologicalAnalyzer<String, Integer>
 {

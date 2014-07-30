@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일\sqlite">
+      <UniqueIdentifier>{58966864-b7c0-44d5-a9d1-3705cd0ef1ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MachineLearning">
+      <UniqueIdentifier>{f7a08eb1-5194-4701-924d-d70739a12dcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{34d78dab-39f9-4179-bd1d-81b7e6dce46e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scoring">
+      <UniqueIdentifier>{d35ad888-ec44-4733-b408-2b81a050e7bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QueryAnalysis">
+      <UniqueIdentifier>{2aa83947-9800-48dd-a0e0-17de43ca0e1f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cQAsystem.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite\sqlite3.c">
+      <Filter>헤더 파일\sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineLearning\FreqBasedTrainer.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryAnalysis\QryAnalCosSim.cpp">
+      <Filter>QueryAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Scoring\CosineSimilarity.cpp">
+      <Filter>Scoring</Filter>
+    </ClCompile>
+    <ClCompile Include="Scoring\NaiveBeysian.cpp">
+      <Filter>Scoring</Filter>
+    </ClCompile>
+    <ClCompile Include="Scoring\OkapiBM25.cpp">
+      <Filter>Scoring</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\DocInfo.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\RapidXmlParser.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\SqliteConnector.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="QAsystem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cQAsystem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite\sqlite3.h">
+      <Filter>헤더 파일\sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite\sqlite3ext.h">
+      <Filter>헤더 파일\sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineLearning\BaseTrainer.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineLearning\FreqBasedTrainer.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryAnalysis\QryAnalCosSim.h">
+      <Filter>QueryAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryAnalysis\QueryAnalyzer.h">
+      <Filter>QueryAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Scoring\CosineSimilarity.h">
+      <Filter>Scoring</Filter>
+    </ClInclude>
+    <ClInclude Include="Scoring\NaiveBeysian.h">
+      <Filter>Scoring</Filter>
+    </ClInclude>
+    <ClInclude Include="Scoring\OkapiBM25.h">
+      <Filter>Scoring</Filter>
+    </ClInclude>
+    <ClInclude Include="Scoring\ScoreCalculator.h">
+      <Filter>Scoring</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\DocInfo.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\FreqScore.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\KoreanMorphologicalAnalyzer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\ProgressBar.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\RapidXmlParser.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\SqliteConnector.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\StdRedef.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Term.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\winDirent.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

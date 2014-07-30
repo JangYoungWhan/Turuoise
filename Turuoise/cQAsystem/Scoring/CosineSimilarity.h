@@ -4,11 +4,11 @@
 
 #include <forward_list>
 #include <set>
-#include "StdRedef.h"
-#include "Term.h"
-#include "ScoreCalculator.h"
-#include "SqliteConnector.h"
-#include "DocInfo.h"
+#include "../Utils/StdRedef.h"
+#include "../Utils/Term.h"
+#include "../Scoring/ScoreCalculator.h"
+#include "../Utils/SqliteConnector.h"
+#include "../Utils/DocInfo.h"
 
 
 class CosineSimilarity : public ScoreCalculator

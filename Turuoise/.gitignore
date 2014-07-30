@@ -221,6 +221,3 @@ FakesAssemblies/
 # DB Files
 *.db
 *.db3
-
-# Project Config
-cQAsystem.vcxproj.filters

@@ -80,35 +80,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CosineSimilarity.cpp" />
     <ClCompile Include="cQAsystem.cpp" />
-    <ClCompile Include="FreqBasedTrainer.cpp" />
+    <ClCompile Include="MachineLearning\FreqBasedTrainer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NaiveBeysian.cpp" />
-    <ClCompile Include="QryAnalCosSim.cpp" />
-    <ClCompile Include="RapidXmlParser.cpp" />
-    <ClCompile Include="SqliteConnector.cpp" />
+    <ClCompile Include="QueryAnalysis\QryAnalCosSim.cpp" />
+    <ClCompile Include="Scoring\CosineSimilarity.cpp" />
+    <ClCompile Include="Scoring\NaiveBeysian.cpp" />
+    <ClCompile Include="Scoring\OkapiBM25.cpp" />
     <ClCompile Include="sqlite\sqlite3.c" />
+    <ClCompile Include="Utils\DocInfo.cpp" />
+    <ClCompile Include="Utils\RapidXmlParser.cpp" />
+    <ClCompile Include="Utils\SqliteConnector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseTrainer.h" />
-    <ClInclude Include="CosineSimilarity.h" />
     <ClInclude Include="cQAsystem.h" />
-    <ClInclude Include="FreqBasedTrainer.h" />
-    <ClInclude Include="KoreanMorphologicalAnalyzer.h" />
-    <ClInclude Include="NaiveBeysian.h" />
-    <ClInclude Include="ProgressBar.h" />
+    <ClInclude Include="MachineLearning\BaseTrainer.h" />
+    <ClInclude Include="MachineLearning\FreqBasedTrainer.h" />
     <ClInclude Include="QAsystem.h" />
-    <ClInclude Include="QryAnalCosSim.h" />
-    <ClInclude Include="QueryAnalyzer.h" />
-    <ClInclude Include="RapidXmlParser.h" />
-    <ClInclude Include="ScoreCalculator.h" />
-    <ClInclude Include="SqliteConnector.h" />
+    <ClInclude Include="QueryAnalysis\QryAnalCosSim.h" />
+    <ClInclude Include="QueryAnalysis\QueryAnalyzer.h" />
+    <ClInclude Include="Scoring\CosineSimilarity.h" />
+    <ClInclude Include="Scoring\NaiveBeysian.h" />
+    <ClInclude Include="Scoring\OkapiBM25.h" />
+    <ClInclude Include="Scoring\ScoreCalculator.h" />
     <ClInclude Include="sqlite\sqlite3.h" />
     <ClInclude Include="sqlite\sqlite3ext.h" />
-    <ClInclude Include="StdRedef.h" />
-    <ClInclude Include="Term.h" />
-    <ClInclude Include="winDirent.h" />
+    <ClInclude Include="Utils\DocInfo.h" />
+    <ClInclude Include="Utils\FreqScore.h" />
+    <ClInclude Include="Utils\KoreanMorphologicalAnalyzer.h" />
+    <ClInclude Include="Utils\ProgressBar.h" />
+    <ClInclude Include="Utils\RapidXmlParser.h" />
+    <ClInclude Include="Utils\SqliteConnector.h" />
+    <ClInclude Include="Utils\StdRedef.h" />
+    <ClInclude Include="Utils\Term.h" />
+    <ClInclude Include="Utils\winDirent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,15 +2,7 @@
 #define _NAIVE_BEYSIAN_H_
 
 
-#include <iostream>
-#include <forward_list>
-#include <set>
-#include <map>
-#include "StdRedef.h"
-#include "Term.h"
-#include "FreqScore.h"
-#include "SqliteConnector.h"
-#include "ScoreCalculator.h"
+#include "../Scoring/ScoreCalculator.h"
 
 
 class NaiveBeysian : public ScoreCalculator
@@ -23,8 +15,8 @@ private:
 	void calculateQuestionScore();
 	void calculateAnswerScore();
 	Integer getSumOfDocFreq(const std::map<String, FreqScore<Integer, Integer>>	*doc_info) const;
-	Real NaiveBeysian::prob_w_d(Integer w_freq, Integer d_freq);
-	Real NaiveBeysian::applyLaplaceSmoothing(Real real);
+	Real prob_w_d(Integer w_freq, Integer d_freq);
+	Real applyLaplaceSmoothing(Real real);
 
 public:
 	NaiveBeysian();

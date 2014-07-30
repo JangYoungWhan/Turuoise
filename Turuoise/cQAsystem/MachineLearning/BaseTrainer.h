@@ -2,14 +2,14 @@
 #define _BASE_TRAINER_H_
 
 #include <forward_list>
-#include "StdRedef.h"
-#include "KoreanMorphologicalAnalyzer.h"
-#include "SqliteConnector.h"
-#include "RapidXmlParser.h"
-#include "ProgressBar.h"
+#include "../Utils/StdRedef.h"
+#include "../Utils/KoreanMorphologicalAnalyzer.h"
+#include "../Utils/SqliteConnector.h"
+#include "../Utils/RapidXmlParser.h"
+#include "../Utils/ProgressBar.h"
 
 #ifdef _WIN32
-#include "winDirent.h"
+#include "../Utils/winDirent.h"
 #else
 #include <dirent.h>
 #endif

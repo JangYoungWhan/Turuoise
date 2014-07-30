@@ -4,9 +4,9 @@
 
 #include <iostream>
 #include "StdRedef.h"
-#include "xml_parser\rapidxml.hpp"
-#include "xml_parser\rapidxml_iterators.hpp"
-#include "xml_parser\rapidxml_utils.hpp"
+#include "../xml_parser\rapidxml.hpp"
+#include "../xml_parser\rapidxml_iterators.hpp"
+#include "../xml_parser\rapidxml_utils.hpp"
 
 
 class RapidXmlParser

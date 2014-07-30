@@ -10,7 +10,7 @@
 #include <forward_list>
 #include <map>
 #include <set>
-#include "sqlite/sqlite3.h"
+#include "../sqlite/sqlite3.h"
 #include "StdRedef.h"
 #include "Term.h"
 #include "FreqScore.h"

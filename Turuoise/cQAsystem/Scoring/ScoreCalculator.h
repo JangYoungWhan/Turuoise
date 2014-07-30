@@ -4,11 +4,11 @@
 
 #include <vector>
 #include <forward_list>
-#include "StdRedef.h"
-#include "Term.h"
-#include "SqliteConnector.h"
-#include "ProgressBar.h"
-#include "DocInfo.h"
+#include "../Utils/StdRedef.h"
+#include "../Utils/Term.h"
+#include "../Utils/SqliteConnector.h"
+#include "../Utils/ProgressBar.h"
+#include "../Utils/DocInfo.h"
 
 
 class ScoreCalculator

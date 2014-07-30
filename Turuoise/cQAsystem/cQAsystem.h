@@ -5,15 +5,15 @@
 #include <forward_list>
 #include <algorithm>
 #include "QAsystem.h"
-#include "SqliteConnector.h"
-#include "BaseTrainer.h"
-#include "FreqBasedTrainer.h"
-#include "QueryAnalyzer.h"
-#include "QryAnalCosSim.h"
-#include "ScoreCalculator.h"
-#include "CosineSimilarity.h"
-#include "NaiveBeysian.h"
-#include "DocInfo.h"
+#include "Utils/SqliteConnector.h"
+#include "MachineLearning/BaseTrainer.h"
+#include "MachineLearning/FreqBasedTrainer.h"
+#include "QueryAnalysis/QueryAnalyzer.h"
+#include "QueryAnalysis/QryAnalCosSim.h"
+#include "Scoring/ScoreCalculator.h"
+#include "Scoring/CosineSimilarity.h"
+#include "Scoring/NaiveBeysian.h"
+#include "Utils/DocInfo.h"
 
 
 class CQAsystem : public QAsystem

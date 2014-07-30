@@ -3,7 +3,7 @@
 
 
 #include <iostream>
-#include "StdRedef.h"
+#include "../Utils/StdRedef.h"
 #include "BaseTrainer.h"
 
 class FreqBasedTrainer : public BaseTrainer
