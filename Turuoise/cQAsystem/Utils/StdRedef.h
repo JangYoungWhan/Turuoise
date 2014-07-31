@@ -21,8 +21,8 @@ enum { QUESTION, ANSWER};
 // Natural number
 const Real M_E				= 2.7182818284590452354;
 
-const Real QUESTION_RATIO	= 0.7;
-const Real ANSWER_RATIO		= 0.3;
+const Real QUESTION_RATIO	= 0.5;
+const Real ANSWER_RATIO		= 0.5;
 
 
 #endif
