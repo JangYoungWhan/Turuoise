@@ -62,8 +62,8 @@ void CQAsystem::calculateScore()
 
 	std::cout << "Ready to calculateScore" << std::endl;
 
-	//mScoreCalculator = new CosineSimilarity(mSqliteConnector);
-	mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
+	mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
+	//mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult);
 
 	std::cout << "Scoring complete" << std::endl << std::endl;

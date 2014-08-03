@@ -13,6 +13,10 @@
 
 class CosineSimilarity : public ScoreCalculator
 {
+private:
+	std::vector<Term<String, Integer>>	mVectorDocInfoInQuestion;
+	std::vector<Term<String, Integer>>	mVectorDocInfoInAnswer;
+
 public:
 	CosineSimilarity();
 	CosineSimilarity(Integer numOfDoc, SqliteConnector* SqlConnector);
@@ -20,7 +24,7 @@ public:
 
 public:
 	virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result);
-	virtual void beginScoring(std::set<Term<String, Integer>> *query_result);
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result);
 };
 
 

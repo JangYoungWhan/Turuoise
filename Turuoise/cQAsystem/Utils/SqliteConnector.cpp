@@ -67,6 +67,13 @@ bool SqliteConnector::createDB()
 			"FREQUENCY	INT					NOT	NULL);";
 	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
 		return false;
+
+
+	sql =	"CREATE TABLE DOC_FILENAME( "	\
+			"DOCID		INT	PRIMARY	KEY		NOT	NULL, "	\
+			"FNAME		TEXT				NOT	NULL);";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
 	
 	return true;
 }
@@ -201,6 +208,54 @@ bool SqliteConnector::updateDB(const std::forward_list<Term<String, Integer>>* w
 	}
 	return true;
 }
+
+
+int SqliteConnector::getDocCount( ){
+	String sql;
+	std::vector< std::vector<String>> result;
+
+	sql = "SELECT COUNT( DOCID) FROM DOC_FILENAME";
+	result = queryDB(sql.c_str());
+	int doc_number;
+	if( atoi( result[ 0].at( 0).c_str()) == 0)
+		doc_number = 0;
+	else {
+		sql = "SELECT MAX( DOCID) FROM DOC_FILENAME";
+		result = queryDB(sql.c_str());
+		doc_number = atoi( result[ 0].at( 0).c_str()) + 1;
+	}
+
+	return doc_number;
+}
+
+
+bool SqliteConnector::updateDB( std::string fname){
+	String sql;
+	std::vector< std::vector<String>> result;
+
+	int index = fname.find_last_of( "//");
+	if( std::string::npos != index) {
+		fname = fname.substr( index + 1);
+	}
+
+	sql = "SELECT COUNT( DOCID) FROM DOC_FILENAME";
+	result = queryDB(sql.c_str());
+	int doc_number;
+	if( atoi( result[ 0].at( 0).c_str()) == 0)
+		doc_number = 0;
+	else {
+		sql = "SELECT MAX( DOCID) FROM DOC_FILENAME";
+		result = queryDB(sql.c_str());
+		doc_number = atoi( result[ 0].at( 0).c_str()) + 1;
+	}
+
+	sql = "INSERT INTO DOC_FILENAME";
+	sql += " VALUES( " + std::to_string( doc_number) + ", '"+ fname + "')";
+	queryDB(sql.c_str());
+
+	return true;
+}
+
 
 bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int flag){
 
@@ -417,6 +472,34 @@ std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfoFlist(Integ
 	
 	return vec_Term;
 }
+
+
+std::vector<Term<String, Integer>> SqliteConnector::getDocInfoVector(Integer doc_id, int flag){
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	sql = "SELECT NAME, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID";
+	sql += " WHERE DOCID='";
+	sql += std::to_string( doc_id);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	std::vector<Term<String, Integer>> vec_Term;
+	for( auto n1 = 0 ; n1 < result.size() ; n1++) {
+
+		Term< String, Integer> term;
+		term.setTerm( UTF8ToANSI( result[ n1].at( 0).c_str()));
+		term.setTermFreq( atoi( result[ n1].at( 1).c_str()));
+		term.setScore( 0);
+
+		vec_Term.push_back( term);
+	}
+	
+	return vec_Term;
+}
+
 
 std::set<Term<String, Integer>>* SqliteConnector::getDocInfoSet(Integer doc_id, int flag){
 	

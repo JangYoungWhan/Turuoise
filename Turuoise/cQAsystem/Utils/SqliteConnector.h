@@ -35,6 +35,8 @@ public:
 
 	bool openDB();
 	bool initDB();
+	int SqliteConnector::getDocCount( );
+	bool updateDB( std::string fname);
 	bool updateDB( const std::forward_list<Term<String, Integer>>* words, int flag);
 	bool updateDB( const std::set<Term<String, Integer>>* words, int flag);
 	bool closeDB();
@@ -47,6 +49,7 @@ public:
 	Integer SqliteConnector::getCountWordID();
 	Integer SqliteConnector::getSumTermFreq();
 	std::forward_list<Term<String, Integer>>* getDocInfoFlist(Integer doc_id, int flag);
+	std::vector<Term<String, Integer>> getDocInfoVector(Integer doc_id, int flag);
 	std::set<Term<String, Integer>>* getDocInfoSet(Integer doc_id, int flag);
 	std::map<String, FreqScore<Integer, Integer>>* getDocInfoMap(Integer doc_id, int flag);
 

@@ -41,12 +41,13 @@ inline
 Integer OkapiBM25::calc_dl(Integer d, Integer f)
 {
 	//return mSqlConnector->getDocLen(d, f);
+	return 1;
 }
 
 inline
 Integer OkapiBM25::calc_avgdl(Integer f)
 {
-
+	return 1;
 }
 
 
@@ -74,7 +75,7 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 			auto find_result_in_que = mSetDocInfoInQuestion->find(qry->getTerm());
 			if(find_result_in_que != mSetDocInfoInQuestion->end())
 			{
-				auto tf = calc_tf(qry->getTerm, doc_id, QUESTION);
+				auto tf = calc_tf(qry->getTerm(), doc_id, QUESTION);
 				auto df = calc_df(qry->getTerm(), QUESTION);				
 				auto idf = calc_idf(df);
 				auto curdl = calc_dl(doc_id, QUESTION);
@@ -87,7 +88,7 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 			auto find_result_in_ans = mSetDocInfoInAnswer->find(qry->getTerm());
 			if(find_result_in_ans != mSetDocInfoInAnswer->end())
 			{
-				auto tf = calc_tf(qry->getTerm, doc_id, ANSWER);
+				auto tf = calc_tf(qry->getTerm(), doc_id, ANSWER);
 				auto df = calc_df(qry->getTerm(), ANSWER);				
 				auto idf = calc_idf(df);
 				auto curdl = calc_dl(doc_id, ANSWER);

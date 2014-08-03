@@ -36,6 +36,9 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 		mXmlParser = new RapidXmlParser(xmlFile);
 		mXmlParser->runParsing();
 
+		if(!mSqlConnector->updateDB( xmlFile))
+			return false;
+
 		const std::set<Term<String, Integer>>* extractWords = nullptr;
 
 		extractWords = extractIndex2Set(mSqlConnector->UTF8ToANSI(mXmlParser->getQuestionColumn()));
