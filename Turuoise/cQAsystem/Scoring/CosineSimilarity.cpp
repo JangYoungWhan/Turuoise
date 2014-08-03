@@ -36,22 +36,19 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 			// calculate question area
 			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
 				Term<String, Integer> que_term = mVectorDocInfoInQuestion[ n];
-				if( qry->getTerm().compare( que_term.getTerm()) == 0) {
+				if( qry->getTerm().compare( que_term.getTerm()) == 0)
 					que_prob += qry->getTermFreq() * que_term.getTermFreq();
-					mVectorDocInfoInQuestion.erase( mVectorDocInfoInQuestion.begin() + n);
-				}
 			}
 			
 			// calculate answer area
 			for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
 				Term<String, Integer> ans_term = mVectorDocInfoInAnswer[ n];
-				if( qry->getTerm().compare( ans_term.getTerm()) == 0) {
-					que_prob += qry->getTermFreq() * ans_term.getTermFreq();
-					mVectorDocInfoInAnswer.erase( mVectorDocInfoInAnswer.begin() + n);
-				}
+				if( qry->getTerm().compare( ans_term.getTerm()) == 0)
+					ans_prob += qry->getTermFreq() * ans_term.getTermFreq();
 			}
 
 			magA += qry->getTermFreq() * qry->getTermFreq();
+
 		}
 
 		for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
