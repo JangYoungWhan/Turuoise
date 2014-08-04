@@ -54,6 +54,8 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 	}
 	delete pFlist;
 
+	mSqlConnector->delete_m1_DB( QUESTION);
+	mSqlConnector->delete_m1_DB( ANSWER);
 	std::cout<<std::endl;
 
 	return true;

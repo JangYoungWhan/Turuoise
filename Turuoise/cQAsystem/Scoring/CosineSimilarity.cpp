@@ -70,7 +70,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 		que_prob = que_prob / (double)( sqrt( magA) * sqrt( que_magB));
 		ans_prob = ans_prob / (double)( sqrt( magA) * sqrt( ans_magB));
 
-		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
+		DocInfo doc(i, que_prob*QUESTION_RATIO);
 		score_result[i] = doc;
 		
 	}

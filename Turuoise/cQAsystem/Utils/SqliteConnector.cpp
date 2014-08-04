@@ -301,6 +301,14 @@ bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int
 		result = queryDB(sql.c_str());
 		doc_number = atoi( result[ 0].at( 0).c_str()) + 1;
 	}
+	//( flag == QUESTION)? std::cout << "que" << doc_number << std::endl : std::cout << "awn" << doc_number << std::endl;
+
+	if( map_id_freqeuncy.size() == 0) {
+		sql = "INSERT INTO ";
+		sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
+		sql += " VALUES( " + std::to_string( doc_number) + ", " + std::to_string( -1) + ", " + std::to_string( -1) + ")";
+		queryDB(sql.c_str());
+	}
 
 	for( auto iter = map_id_freqeuncy.begin() ; iter != map_id_freqeuncy.end() ; iter++) {
 		sql = "SELECT * FROM ";
@@ -329,10 +337,25 @@ bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int
 		sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
 		sql += " VALUES( " + std::to_string( doc_number) + ", " + std::to_string( iter->first) + ", " + std::to_string( iter->second) + ")";
 		queryDB(sql.c_str());
-
 	}
 	return true;
 }
+
+
+bool SqliteConnector::delete_m1_DB( int flag){
+
+	String sql;
+
+	sql = "DELETE FROM ";
+	sql += ( flag == QUESTION)?	"QUESTION_TF" : "ANSWER_TF";
+	sql +=	" WHERE WORDID=";
+	sql += std::to_string( -1);
+
+	queryDB(sql.c_str());
+	
+	return true;
+}
+
 
 bool SqliteConnector::closeDB() {
 	sqlite3_close(mSqliteDB);
