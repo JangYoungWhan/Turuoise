@@ -38,7 +38,7 @@ public:
 	int SqliteConnector::getDocCount( );
 	bool updateDB( std::string fname);
 	bool updateDB( const std::forward_list<Term<String, Integer>>* words, int flag);
-	bool updateDB( const std::set<Term<String, Integer>>* words, int flag);
+	bool updateDB( const std::set<Term<String, Integer>>* words, int strlen, int flag);
 	bool SqliteConnector::delete_m1_DB( int flag);
 	bool closeDB();
 

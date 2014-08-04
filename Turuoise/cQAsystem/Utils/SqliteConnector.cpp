@@ -74,7 +74,19 @@ bool SqliteConnector::createDB()
 			"FNAME		TEXT				NOT	NULL);";
 	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
 		return false;
+
+	sql =	"CREATE TABLE QUESTION_DOC_STRLEN( "	\
+			"DOCID		INT	PRIMARY	KEY		NOT	NULL, "	\
+			"STRLEN		INT					NOT	NULL);";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
 	
+	sql =	"CREATE TABLE ANSWER_DOC_STRLEN( "	\
+			"DOCID		INT	PRIMARY	KEY		NOT	NULL, "	\
+			"STRLEN		INT					NOT	NULL);";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
 	return true;
 }
 
@@ -257,7 +269,7 @@ bool SqliteConnector::updateDB( std::string fname){
 }
 
 
-bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int flag){
+bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int strlen, int flag){
 
 	String sql;
 	std::vector< std::vector<String>> result;
@@ -301,7 +313,11 @@ bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int
 		result = queryDB(sql.c_str());
 		doc_number = atoi( result[ 0].at( 0).c_str()) + 1;
 	}
-	//( flag == QUESTION)? std::cout << "que" << doc_number << std::endl : std::cout << "awn" << doc_number << std::endl;
+
+	sql = "INSERT INTO ";
+	sql += ( flag == QUESTION)?	"QUESTION_DOC_STRLEN" : "ANSWER_DOC_STRLEN";
+	sql += " VALUES( " + std::to_string( doc_number) + ", " + std::to_string( strlen) + ")";
+	queryDB(sql.c_str());
 
 	if( map_id_freqeuncy.size() == 0) {
 		sql = "INSERT INTO ";
