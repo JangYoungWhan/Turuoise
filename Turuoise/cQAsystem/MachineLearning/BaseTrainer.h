@@ -2,6 +2,7 @@
 #define _BASE_TRAINER_H_
 
 #include <forward_list>
+#include <list>
 #include "../Utils/StdRedef.h"
 #include "../Utils/KoreanMorphologicalAnalyzer.h"
 #include "../Utils/SqliteConnector.h"
@@ -45,6 +46,32 @@ protected:
 			sprintf(path, "%s/%s", srcDir, curFileName);
 
 			ngtPathList->insert_after(ngtPathList->before_begin(), String(path));
+
+			free(path);
+		}
+		closedir(dir);
+	}
+	void readDirectory(const char* srcDir, std::list<String> *ngtPathList)
+	{
+		DIR *dir = opendir(srcDir);
+		if(!dir)
+		{
+			std::cerr << "Can not open directory : [" << dir << "]" << std::endl;
+			return;
+		}
+
+		// traverse files in directory
+		dirent *entry = nullptr;
+		while((entry = readdir(dir)) != NULL)
+		{
+			auto curFileName = entry->d_name;
+			if(!strcmp(curFileName, ".") || !strcmp(curFileName, ".."))
+				continue;
+
+			char *path = (char*)malloc(strlen(srcDir)+strlen(curFileName)+2);
+			sprintf(path, "%s/%s", srcDir, curFileName);
+
+			ngtPathList->push_back(String(path));
 
 			free(path);
 		}

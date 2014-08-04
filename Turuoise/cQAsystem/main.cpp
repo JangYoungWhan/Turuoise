@@ -3,6 +3,7 @@
  * Author	: YW. Jang, Zizo
  */
 
+
 #include <iostream>
 #include <string>
 #include "QAsystem.h"
@@ -10,7 +11,7 @@
 #include <time.h>
 
 
-#define _TRAINING_MODE_
+//#define _TRAINING_MODE_
 
 int main(int argc, char* argv[])
 {
@@ -26,9 +27,11 @@ int main(int argc, char* argv[])
 	#ifdef _TRAINING_MODE_
 	clock_t start_time, end_time;
 	start_time = clock();
-	pQAsystem->beginTraning(TRAINING_DATA_PATH);
+	pQAsystem->beginTraning(TRAINING_DATA_PATH, false);
 	end_time = clock();
 	std::cout<< "Machine Learning Time : " << static_cast<Real>(end_time-start_time)/CLOCKS_PER_SEC << std::endl << std::endl;
+	#else
+	pQAsystem->beginTraning(TRAINING_DATA_PATH, true);
 	#endif
 
 	pQAsystem->analyzeQuery(QUERY);

@@ -121,7 +121,7 @@ std::map<T_str, FreqScore<T_int, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_i
 template <typename T_str, typename T_int>
 KoreanMorphologicalAnalyzer<T_str, T_int>::KoreanMorphologicalAnalyzer()
 {
-	if (open_HAM_index(&mMode, NULL, "hdic/KLT2000.ini"))
+	if (!open_HAM_index(&mMode, NULL, "Utils/hdic/KLT2000.ini"))
 		std::cerr << "Cannot load dictionary files" << std::endl;
 }
 

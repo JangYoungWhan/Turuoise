@@ -13,7 +13,7 @@ public:
 	virtual ~QAsystem() { };
 	
 	// Phase 1 : Begin specified machine learning.
-	virtual void beginTraning(String& srcDir) = 0;
+	virtual void beginTraning(String& srcDir, bool isTrained) = 0;
 
 	// Phase 2 : Decode or analyze a query that the user ask an answer.
 	virtual void analyzeQuery(String& query) = 0;

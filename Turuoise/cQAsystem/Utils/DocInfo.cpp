@@ -30,9 +30,9 @@ bool DocInfo::operator<(const DocInfo &rhs) const
 bool DocInfo::operator>(const DocInfo &rhs) const
 {
 	if(this->mScore - rhs.getScore() > EPSILON)
-		return true;
-	else
 		return false;
+	else
+		return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const DocInfo& doc)

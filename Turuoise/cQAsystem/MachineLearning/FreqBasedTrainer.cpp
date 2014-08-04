@@ -22,7 +22,8 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 	std::cout << "beginTraning" << std::endl;
 
 	// traverse all files 
-	std::forward_list<String>* pFlist = new std::forward_list<String>();
+	//std::forward_list<String>* pFlist = new std::forward_list<String>();
+	std::list<String>* pFlist = new std::list<String>();
 	readDirectory(trainingPath.c_str(), pFlist);
 
 	auto cur_progress = 0;

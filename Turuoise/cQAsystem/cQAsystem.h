@@ -15,6 +15,12 @@
 #include "Scoring/NaiveBeysian.h"
 #include "Utils/DocInfo.h"
 
+#ifdef _WIN32
+#include "Utils/winDirent.h"
+#else
+#include <dirent.h>
+#endif
+
 
 class CQAsystem : public QAsystem
 {
@@ -36,18 +42,18 @@ private:
 
 private:
 	const String& getXmlPathFromDocID(Integer doc_id) const;
+	bool loadTraningDir(const char* training_dir);
 
 public:
 	CQAsystem();
 	CQAsystem(String& dbName);
-	virtual ~CQAsystem();
+	virtual ~CQAsystem();	
 
 public:
-	virtual void beginTraning(String& srcDir);
+	virtual void beginTraning(String& srcDir, bool isTrained);
 	virtual void analyzeQuery(String& query);
 	virtual void calculateScore();
 	virtual void dispalyResult(const Integer show_limit);
-
 };
 
 

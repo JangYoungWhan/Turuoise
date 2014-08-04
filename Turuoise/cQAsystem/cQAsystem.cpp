@@ -27,18 +27,55 @@ CQAsystem::~CQAsystem()
 	delete this->mSetQueryResult;
 }
 
-void CQAsystem::beginTraning(String& srcDir)
+bool CQAsystem::loadTraningDir(const char* training_dir)
 {
-	mSqliteConnector = new SqliteConnector(mDbName);
-	mSqliteConnector->initDB();
+	DIR *dir = opendir(training_dir);
+	if(!dir)
+	{
+		std::cerr << "Can not open directory : [" << dir << "]" << std::endl;
+		return false;
+	}
 
-	std::cout << "Ready to beginTraning" << std::endl;
-	mTrainer = new FreqBasedTrainer(mSqliteConnector);
-	mTrainer->beginTraning(srcDir, mDocId2DocPath);
-	std::cout << "Training complete" << std::endl << std::endl;
+	// traverse files in directory
+	dirent *entry = nullptr;
+	Integer prog = 0;
+	while((entry = readdir(dir)) != NULL)
+	{
+		auto curFileName = entry->d_name;
+		if(!strcmp(curFileName, ".") || !strcmp(curFileName, ".."))
+			continue;
 
-	delete mTrainer;
-	delete mSqliteConnector;
+		char *path = (char*)malloc(strlen(training_dir)+strlen(curFileName)+2);
+		sprintf(path, "%s/%s", training_dir, curFileName);
+
+		mDocId2DocPath.insert(std::pair<Integer, String>(prog++, String(path)));
+
+		free(path);
+	}
+	closedir(dir);
+
+	return true;
+}
+
+void CQAsystem::beginTraning(String& srcDir, bool isTrained)
+{
+	if(!isTrained)
+	{
+		mSqliteConnector = new SqliteConnector(mDbName);
+		mSqliteConnector->initDB();
+
+		std::cout << "Ready to beginTraning" << std::endl;
+		mTrainer = new FreqBasedTrainer(mSqliteConnector);
+		mTrainer->beginTraning(srcDir, mDocId2DocPath);
+		std::cout << "Training complete" << std::endl << std::endl;
+
+		delete mTrainer;
+		delete mSqliteConnector;
+	}
+	else
+	{
+		loadTraningDir(srcDir.c_str());
+	}
 }
 void CQAsystem::analyzeQuery(String& query)
 {
