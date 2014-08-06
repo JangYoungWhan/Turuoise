@@ -669,3 +669,20 @@ bool SqliteConnector::hasEnding(String const &fullString, String const &ending)
         return false;
     }
 }
+
+bool SqliteConnector::initExistsDB() const
+{
+	struct stat buffer;
+	if(stat(mDbName.c_str(), &buffer) == 0)
+	{
+		#ifdef _WIN32
+		String command = "del " + mDbName;
+		#else
+		String command = "exec rm " + mDbName;
+		#endif
+		system(command.c_str());
+		return true;
+	}
+	else
+		return false;
+}

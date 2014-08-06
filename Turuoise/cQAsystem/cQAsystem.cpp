@@ -62,6 +62,8 @@ void CQAsystem::beginTraning(String& srcDir, bool isTrained)
 	if(!isTrained)
 	{
 		mSqliteConnector = new SqliteConnector(mDbName);
+		if(mSqliteConnector->initExistsDB())
+			std::cout << "Delete already existed DB." << std::endl;
 		mSqliteConnector->initDB();
 
 		std::cout << "Ready to beginTraning" << std::endl;
