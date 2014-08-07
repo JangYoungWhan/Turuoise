@@ -119,25 +119,10 @@ const String& CQAsystem::getXmlPathFromDocID(Integer doc_id) const
 	return find_result->second;
 }
 
-bool greater_score(DocInfo &a, DocInfo &b)
-{
-	return a.getScore() > b.getScore();
-}
-
-int qsort_compare(const void* a, const void* b)
-{
-	if(((DocInfo*)b)->getScore() - ((DocInfo*)a)->getScore() > EPSILON)
-		return 1;
-	else
-		return -1;
-}
-
 void CQAsystem::dispalyResult(const Integer show_limit)
 {
 	std::cout << "Ready to dispalyResult" << std::endl;
 	std::partial_sort(mScoreResult.begin(), mScoreResult.begin()+show_limit, mScoreResult.end());
-	//std::sort(mScoreResult.begin(), mScoreResult.begin(), greater_score);
-	//qsort(&mScoreResult, 500, sizeof(DocInfo), qsort_compare);
 
 	for(auto i=0; i<show_limit; i++)
 	{

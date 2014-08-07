@@ -676,9 +676,9 @@ bool SqliteConnector::initExistsDB() const
 	if(stat(mDbName.c_str(), &buffer) == 0)
 	{
 		#ifdef _WIN32
-		String command = "del " + mDbName;
+		String command = "del /s /q " + mDbName;
 		#else
-		String command = "exec rm " + mDbName;
+		String command = "rm -f " + mDbName;
 		#endif
 		system(command.c_str());
 		return true;
