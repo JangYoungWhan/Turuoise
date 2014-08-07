@@ -55,6 +55,9 @@ public:
 	std::set<Term<String, Integer>>* getDocInfoSet(Integer doc_id, int flag);
 	std::map<String, FreqScore<Integer, Integer>>* getDocInfoMap(Integer doc_id, int flag);
 
+	// docid가 존재하지 않으면 -1, 존재하면 TEXTLENGTH반환
+	int getDocTextLength( Integer doc_id, int flag);
+
 private: // Utils
 	std::vector< std::vector< String>> queryDB(const char* query);
 	bool hasEnding(String const &fullString, String const &ending);

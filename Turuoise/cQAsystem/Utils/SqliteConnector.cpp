@@ -589,6 +589,26 @@ std::map<String, FreqScore<Integer, Integer>>* SqliteConnector::getDocInfoMap(In
 	
 	return map_Term;
 }
+
+
+int SqliteConnector::getDocTextLength( Integer doc_id, int flag) {
+	String sql;
+	std::vector< std::vector< String>> result;
+
+	sql = "SELECT STRLEN FROM ";
+	sql += ( flag == QUESTION)?	"QUESTION_DOC_STRLEN" : "ANSWER_DOC_STRLEN";
+	sql += " WHERE DOCID='";
+	sql += std::to_string( doc_id);
+	sql += "'";
+
+	result = queryDB( sql.c_str());
+	if( result.size() == 0)
+		return -1;
+	else
+		return atoi( result[0].at( 0).c_str());
+}
+
+
 //
 std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)
 {

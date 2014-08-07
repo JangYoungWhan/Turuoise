@@ -56,19 +56,16 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 			que_magB += que_term.getTermFreq() * que_term.getTermFreq();
 		}
 			
-			// calculate answer area
 		for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
 			Term<String, Integer> ans_term = mVectorDocInfoInAnswer[ n];
 			ans_magB += ans_term.getTermFreq() * ans_term.getTermFreq();
 		}
 		
-		/*
-		magA = sqrt( magA);
-		que_magB = sqrt( que_magB);
-		ans_magB = sqrt( ans_magB);
-		*/
-		que_prob = que_prob / (double)( sqrt( magA) * sqrt( que_magB));
-		ans_prob = ans_prob / (double)( sqrt( magA) * sqrt( ans_magB));
+		
+		double que_denom = sqrt( magA) * sqrt( que_magB);
+		double ans_denom = sqrt( magA) * sqrt( ans_magB);
+		que_prob = ( que_denom == 0)? 0 : que_prob / que_denom;
+		ans_prob = ( ans_denom == 0)? 0 : ans_prob / ans_denom;
 
 		DocInfo doc(i, que_prob*QUESTION_RATIO);
 		score_result[i] = doc;
