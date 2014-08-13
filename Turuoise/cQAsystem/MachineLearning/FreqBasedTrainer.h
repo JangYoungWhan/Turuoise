@@ -3,6 +3,8 @@
 
 
 #include <iostream>
+#include <regex>
+#include <fstream>
 #include "../Utils/StdRedef.h"
 #include "BaseTrainer.h"
 

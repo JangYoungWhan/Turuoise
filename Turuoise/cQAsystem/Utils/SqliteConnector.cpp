@@ -87,6 +87,12 @@ bool SqliteConnector::createDB()
 	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
 		return false;
 
+	sql =	"CREATE TABLE SYNONYM( "	\
+			"WORDID		INT		NOT	NULL, "	\
+			"NAME		TEXT	NOT	NULL);";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
 	return true;
 }
 
@@ -358,6 +364,20 @@ bool SqliteConnector::updateDB(const std::set<Term<String, Integer>>* words, int
 }
 
 
+bool SqliteConnector::updateSynonymTable( int term_id, String synonym) {
+	
+	String sql;
+
+	sql = "INSERT INTO SYNONYM VALUES( " + std::to_string( term_id);
+	sql += ", '";
+	sql += synonym;
+	sql += "')";
+	queryDB(sql.c_str());
+
+	return true;
+}
+
+
 bool SqliteConnector::delete_m1_DB( int flag){
 
 	String sql;
@@ -390,6 +410,20 @@ Integer SqliteConnector::getWordID(const String &term)
 		return -1;
 	else
 		return atoi( result[ 0].at( 0).c_str());
+}
+
+
+String SqliteConnector::getWord( int word_id)
+{
+	String  sql;
+	sql = "SELECT NAME FROM WORD_ID WHERE WORDID=";
+	sql += std::to_string( word_id);
+
+	std::vector< std::vector< String>> result = queryDB(sql.c_str());
+	if( result.size() == 0) 
+		return NULL;
+	else
+		return result[ 0].at( 0);
 }
 
 
@@ -591,6 +625,25 @@ std::map<String, FreqScore<Integer, Integer>>* SqliteConnector::getDocInfoMap(In
 }
 
 
+std::vector<String> SqliteConnector::getSynonym( int word_id) {
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	sql = "SELECT NAME FROM SYNONYM ";
+	sql += " WHERE WORDID='";
+	sql += std::to_string( word_id);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	std::vector<String> vec_Term;
+	for( auto n1 = 0 ; n1 < result.size() ; n1++)
+		vec_Term.push_back( UTF8ToANSI( result[ n1].at( 0).c_str()));
+	
+	return vec_Term;
+}
+
+
 int SqliteConnector::getDocTextLength( Integer doc_id, int flag) {
 	String sql;
 	std::vector< std::vector< String>> result;
@@ -684,6 +737,80 @@ std::string SqliteConnector::ANSIToUTF8( const char * pszCode)
 	free( pszUTFCode);
 	return return_str;
 }
+
+
+std::wstring SqliteConnector::utf8_to_utf16(const std::string& utf8)
+{
+    std::vector<unsigned long> unicode;
+    size_t i = 0;
+    while (i < utf8.size())
+    {
+        unsigned long uni;
+        size_t todo;
+        bool error = false;
+        unsigned char ch = utf8[i++];
+        if (ch <= 0x7F)
+        {
+            uni = ch;
+            todo = 0;
+        }
+        else if (ch <= 0xBF)
+        {
+            throw std::logic_error("not a UTF-8 string");
+        }
+        else if (ch <= 0xDF)
+        {
+            uni = ch&0x1F;
+            todo = 1;
+        }
+        else if (ch <= 0xEF)
+        {
+            uni = ch&0x0F;
+            todo = 2;
+        }
+        else if (ch <= 0xF7)
+        {
+            uni = ch&0x07;
+            todo = 3;
+        }
+        else
+        {
+            throw std::logic_error("not a UTF-8 string");
+        }
+        for (size_t j = 0; j < todo; ++j)
+        {
+            if (i == utf8.size())
+                throw std::logic_error("not a UTF-8 string");
+            unsigned char ch = utf8[i++];
+            if (ch < 0x80 || ch > 0xBF)
+                throw std::logic_error("not a UTF-8 string");
+            uni <<= 6;
+            uni += ch & 0x3F;
+        }
+        if (uni >= 0xD800 && uni <= 0xDFFF)
+            throw std::logic_error("not a UTF-8 string");
+        if (uni > 0x10FFFF)
+            throw std::logic_error("not a UTF-8 string");
+        unicode.push_back(uni);
+    }
+    std::wstring utf16;
+    for (size_t i = 0; i < unicode.size(); ++i)
+    {
+        unsigned long uni = unicode[i];
+        if (uni <= 0xFFFF)
+        {
+            utf16 += (wchar_t)uni;
+        }
+        else
+        {
+            uni -= 0x10000;
+            utf16 += (wchar_t)((uni >> 10) + 0xD800);
+            utf16 += (wchar_t)((uni & 0x3FF) + 0xDC00);
+        }
+    }
+    return utf16;
+}
+
 
 bool SqliteConnector::hasEnding(String const &fullString, String const &ending)
 {

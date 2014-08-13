@@ -40,11 +40,13 @@ public:
 	bool updateDB( std::string fname);
 	bool updateDB( const std::forward_list<Term<String, Integer>>* words, int flag);
 	bool updateDB( const std::set<Term<String, Integer>>* words, int strlen, int flag);
+	bool updateSynonymTable( int term_id, String synonym);
 	bool delete_m1_DB( int flag);
 	bool closeDB();
 
 public:
 	Integer getWordID(const String &term);
+	String getWord( int word_id);
 	Integer getTF(const String &term, Integer doc, int flag);
 	Integer getDF(const String &term, int flag);
 	Real getIDF(const String &term, int flag);
@@ -54,6 +56,7 @@ public:
 	std::vector<Term<String, Integer>> getDocInfoVector(Integer doc_id, int flag);
 	std::set<Term<String, Integer>>* getDocInfoSet(Integer doc_id, int flag);
 	std::map<String, FreqScore<Integer, Integer>>* getDocInfoMap(Integer doc_id, int flag);
+	std::vector<String> getSynonym( int word_id);
 
 	// docid가 존재하지 않으면 -1, 존재하면 TEXTLENGTH반환
 	int getDocTextLength( Integer doc_id, int flag);
@@ -65,6 +68,7 @@ private: // Utils
 public: // Utils
 	std::string UTF8ToANSI( const char *pszCode);
 	std::string ANSIToUTF8( const char * pszCode);
+	std::wstring SqliteConnector::utf8_to_utf16(const std::string& utf8);
 	bool initExistsDB() const;
 };
 
