@@ -24,7 +24,7 @@ private:
 
 protected:
 	std::forward_list<Term<T_str, T_int>>* extractIndex2Flist(char* text);
-	std::set<Term<T_str, T_int>>* extractIndex2Set(char* text);
+	std::set<Term<T_str, T_int>>* extractIndex2Set( const char* text);
 	std::map<T_str, FreqScore<T_int, T_int>>* extractIndex2Map(char* text);
 public:
 	KoreanMorphologicalAnalyzer();
@@ -55,7 +55,7 @@ std::forward_list<Term<T_str, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_int>
 	- 마지막 인자 -- 0/1(어절위치 numbering 방식)
 	0: 어절순서로, 1: 문장별로 100부터 시작
 	========================================================================*/
-	n = get_terms_text(reinterpret_cast<unsigned char*>(text), mTerm, &mTM, &mMode, 0, 2, 1);
+	n = get_terms_text( text, mTerm, &mTM, &mMode, 0, 2, 1);
 
 	auto iter = pFlistExtractResult->before_begin();
 	for(int i=0; i<n; i++)
@@ -75,11 +75,11 @@ std::forward_list<Term<T_str, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_int>
 }
 
 template <typename T_str, typename T_int>
-std::set<Term<T_str, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_int>::extractIndex2Set(char* text)
+std::set<Term<T_str, T_int>>* KoreanMorphologicalAnalyzer<T_str, T_int>::extractIndex2Set( const char* text)
 {
 	std::set<Term<T_str, T_int>>* pSetExtractResult = new std::set<Term<T_str, T_int>>();
 	int n;
-	n = get_terms_text(reinterpret_cast<unsigned char*>(text), mTerm, &mTM, &mMode, 0, 2, 1);
+	n = get_terms_text( reinterpret_cast< const char*>(text), mTerm, &mTM, &mMode, 0, 2, 1);
 
 	for(int i=0; i<n; i++)
 	{

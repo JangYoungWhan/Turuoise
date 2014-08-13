@@ -42,12 +42,12 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 
 		const std::set<Term<String, Integer>>* extractWords = nullptr;
 
-		extractWords = extractIndex2Set(mSqlConnector->UTF8ToANSI(mXmlParser->getQuestionColumn()));
-		if(!mSqlConnector->updateDB(extractWords, strlen( mSqlConnector->UTF8ToANSI(mXmlParser->getQuestionColumn())), QUESTION))
+		extractWords = extractIndex2Set(mSqlConnector->UTF8ToANSI(mXmlParser->getQuestionColumn()).c_str());
+		if(!mSqlConnector->updateDB(extractWords, strlen( mSqlConnector->UTF8ToANSI(mXmlParser->getQuestionColumn()).c_str()), QUESTION))
 			return false;
 
-		extractWords = extractIndex2Set(mSqlConnector->UTF8ToANSI(mXmlParser->getAnswerColumn()));
-		if(!mSqlConnector->updateDB(extractWords, strlen( mSqlConnector->UTF8ToANSI(mXmlParser->getAnswerColumn())), ANSWER))
+		extractWords = extractIndex2Set(mSqlConnector->UTF8ToANSI(mXmlParser->getAnswerColumn()).c_str());
+		if(!mSqlConnector->updateDB(extractWords, strlen( mSqlConnector->UTF8ToANSI(mXmlParser->getAnswerColumn()).c_str()), ANSWER))
 			return false;
 
 		delete extractWords;

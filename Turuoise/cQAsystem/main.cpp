@@ -11,7 +11,7 @@
 #include <time.h>
 
 
-//#define _TRAINING_MODE_
+#define _TRAINING_MODE_
 
 int main(int argc, char* argv[])
 {

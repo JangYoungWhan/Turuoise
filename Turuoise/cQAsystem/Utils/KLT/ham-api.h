@@ -42,7 +42,7 @@ extern PREFIX int get_stems_TS(	/* 어절 or 문장 단위 & multi-thread */
 	HAM_PMORES hamout,	/* morph. analysis result */
 	HAM_PRUNMODE mode);	/* running mode of HAM */
 extern PREFIX int get_terms_text(	/* 문서 단위 인터페이스 */
-	unsigned char *text,	/* KSC5601 input text */
+	const char *text,	/* KSC5601 input text */
 	HAM_TERMLIST term[],	/* array of extracted terms */
 	HAM_TERMMEMORY *tm,		/* memories for term extraction */
 	HAM_RUNMODE *mode,		/* running mode of HAM */

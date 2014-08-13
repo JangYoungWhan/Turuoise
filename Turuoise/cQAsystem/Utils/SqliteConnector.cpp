@@ -642,7 +642,7 @@ std::vector< std::vector< String>> SqliteConnector::queryDB(const char* query)
     return results;  
 }
 
-char* SqliteConnector::UTF8ToANSI( const char *pszCode)
+std::string SqliteConnector::UTF8ToANSI( const char *pszCode)
 {
 	BSTR    bstrWide;
 	char*   pszAnsi;
@@ -660,10 +660,12 @@ char* SqliteConnector::UTF8ToANSI( const char *pszCode)
 	WideCharToMultiByte( CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
 	SysFreeString( bstrWide);
 
-	return pszAnsi;
+	std::string return_str = pszAnsi;
+	delete[] pszAnsi;
+	return return_str;
 }
 
-char* SqliteConnector::ANSIToUTF8( const char * pszCode)
+std::string SqliteConnector::ANSIToUTF8( const char * pszCode)
 {
 	int	nLength, nLength2;
 	BSTR bstrCode; 
@@ -678,7 +680,9 @@ char* SqliteConnector::ANSIToUTF8( const char * pszCode)
 	pszUTFCode = (char*)malloc( nLength2+1); 
 	WideCharToMultiByte( CP_UTF8, 0, bstrCode, -1, pszUTFCode, nLength2, NULL, NULL); 
 
-	return pszUTFCode;
+	std::string return_str = pszUTFCode;
+	free( pszUTFCode);
+	return return_str;
 }
 
 bool SqliteConnector::hasEnding(String const &fullString, String const &ending)

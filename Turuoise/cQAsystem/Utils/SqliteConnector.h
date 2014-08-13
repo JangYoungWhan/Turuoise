@@ -63,8 +63,8 @@ private: // Utils
 	bool hasEnding(String const &fullString, String const &ending);
 
 public: // Utils
-	char* UTF8ToANSI( const char *pszCode);
-	char* ANSIToUTF8( const char * pszCode);
+	std::string UTF8ToANSI( const char *pszCode);
+	std::string ANSIToUTF8( const char * pszCode);
 	bool initExistsDB() const;
 };
 
