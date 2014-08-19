@@ -812,6 +812,44 @@ std::wstring SqliteConnector::utf8_to_utf16(const std::string& utf8)
 }
 
 
+double SqliteConnector::get_levenshtein_distance( const std::wstring& wcs1, const std::wstring& wcs2)
+{ 
+    unsigned int len1 = wcslen(wcs1.c_str());
+    unsigned int len2 = wcslen(wcs2.c_str());
+	
+    int** d = new int*[ len1 + 1];
+	for( int n = 0 ; n < len1 + 1 ; n++)
+		d[ n] = new int[ len2 + 1];
+ 
+    for ( unsigned int i = 0; i <= len1; ++i) {
+        d[i][0] = i;
+    }
+    for ( unsigned int j = 0; j <= len2; ++j) {
+        d[0][j] = j;
+    }
+ 
+    for ( unsigned int i = 0; i < len1; ++i) {
+        for ( unsigned int j = 0; j < len2; ++j) {
+            int cost;
+            if (wcs1.at( i) == wcs2.at( j)) {
+                cost = 0;
+            } else {
+                cost = 1;
+            }
+            d[i + 1][j + 1] =
+                min(min(d[i][j + 1] + 1, d[i + 1][j] + 1), d[i][j] + cost);
+        }
+    }
+ 
+	double return_val = 1.0 - double(d[len1][len2]) / double(max(len1, len2));
+	for( int n = 0 ; n < len1 + 1 ; n++)
+		delete[] d[ n];
+	delete[] d;
+    
+	return return_val;
+}
+
+
 bool SqliteConnector::hasEnding(String const &fullString, String const &ending)
 {
     if (fullString.length() >= ending.length()) {

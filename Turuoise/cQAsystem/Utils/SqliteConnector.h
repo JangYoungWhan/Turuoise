@@ -68,7 +68,11 @@ private: // Utils
 public: // Utils
 	std::string UTF8ToANSI( const char *pszCode);
 	std::string ANSIToUTF8( const char * pszCode);
-	std::wstring SqliteConnector::utf8_to_utf16(const std::string& utf8);
+	std::wstring utf8_to_utf16(const std::string& utf8);
+
+	// 사용법 : get_levenshtein_distance( utf8_to_utf16( ANSIToUTF8( "대한민국")), utf8_to_utf16( ANSIToUTF8( "대A한A민국")))
+	// UTF16 문자열 두개를 입력받음.
+	double get_levenshtein_distance( const std::wstring& wcs1, const std::wstring& wcs2);
 	bool initExistsDB() const;
 };
 
