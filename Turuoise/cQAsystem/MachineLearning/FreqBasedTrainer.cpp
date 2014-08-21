@@ -59,7 +59,7 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 	mSqlConnector->delete_m1_DB( QUESTION);
 	mSqlConnector->delete_m1_DB( ANSWER);
 	std::cout<<std::endl;
-
+	/*
 #pragma comment( lib, "urlmon.lib")
 #pragma comment( lib, "OleAut32.lib")
 
@@ -127,7 +127,7 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 
 		fin.close();
 	}
-	remove( "Result.html");
+	remove( "Result.html");*/
 
 	return true;
 }

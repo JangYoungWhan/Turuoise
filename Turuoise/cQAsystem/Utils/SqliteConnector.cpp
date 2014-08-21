@@ -96,11 +96,63 @@ bool SqliteConnector::createDB()
 	return true;
 }
 
+bool SqliteConnector::createNgramTables()
+{
+	char *sql;
+
+	if( sqlite3_open( mDbName.c_str(), &mSqliteDB) != 0)
+		return false;
+
+	// make ngram table
+	sql =	"CREATE TABLE NGRAM_WORD_ID( "	\
+			"NAME		TEXT	NOT	NULL, "	\
+			"WORDID		INT		NOT	NULL, "	\
+			"PRIMARY KEY(NAME));";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
+	sql =	"CREATE TABLE UNIGRAM_QUESTION( "	\
+			"DOCID		INT		NOT	NULL, "	\
+			"WORDID		INT		NOT	NULL, "	\
+			"FREQUENCY	INT		NOT	NULL, "	\
+			"PRIMARY KEY(DOCID, WORDID));";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
+	sql =	"CREATE TABLE UNIGRAM_ANSWER( "	\
+			"DOCID		INT		NOT	NULL, "	\
+			"WORDID		INT		NOT	NULL, "	\
+			"FREQUENCY	INT		NOT	NULL, "	\
+			"PRIMARY KEY(DOCID, WORDID));";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
+	sql =	"CREATE TABLE BIGRAM_QUESTION( "	\
+			"DOCID			INT		NOT	NULL, "	\
+			"LEFTWORDID		INT		NOT	NULL, "	\
+			"RIGHTWORDID	INT		NOT	NULL, "	\
+			"FREQUENCY		INT		NOT	NULL, "	\
+			"PRIMARY KEY(DOCID, LEFTWORDID, RIGHTWORDID));";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
+	sql =	"CREATE TABLE BIGRAM_ANSWER( "	\
+			"DOCID			INT		NOT	NULL, "	\
+			"LEFTWORDID		INT		NOT	NULL, "	\
+			"RIGHTWORDID	INT		NOT	NULL, "	\
+			"FREQUENCY		INT		NOT	NULL, "	\
+			"PRIMARY KEY(DOCID, LEFTWORDID, RIGHTWORDID));";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
+	return true;
+}
+
 void SqliteConnector::setDbConfig()
 {
 	sqlite3_exec(mSqliteDB, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 	sqlite3_exec(mSqliteDB, "PRAGMA synchronous=OFF", NULL, NULL, NULL);
-	sqlite3_exec(mSqliteDB, "PRAGMA journal_mode=OFF", NULL, NULL, NULL);
+	sqlite3_exec(mSqliteDB, "PRAGMA journal_mode=MEMORY", NULL, NULL, NULL);
 	sqlite3_exec(mSqliteDB, "PRAGMA locking_mode=exclusive", NULL, NULL, NULL);
 	sqlite3_exec(mSqliteDB, "PRAGMA temp_store=OFF", NULL, NULL, NULL);
 }
@@ -147,6 +199,173 @@ bool SqliteConnector::initDB()
 			std::cerr << ">> db 열기 실패, " << sqlite3_errmsg( mSqliteDB) << std::endl;
 			return false;
 		}
+	}
+}
+
+bool SqliteConnector::initExistsNgramTable()
+{
+	char *sql;
+
+	if( sqlite3_open( mDbName.c_str(), &mSqliteDB) != 0)
+		return false;
+
+	sql =	"DROP TABLE NGRAM_WORD_ID;";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+	sql =	"DROP TABLE UNIGRAM_QUESTION;";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+	sql =	"DROP TABLE UNIGRAM_ANSWER;";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+	sql =	"DROP TABLE BIGRAM_QUESTION;";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+	sql =	"DROP TABLE BIGRAM_ANSWER;";
+	if( sqlite3_exec( mSqliteDB, sql, 0, 0, 0) != SQLITE_OK )
+		return false;
+
+	return true;
+}
+
+bool SqliteConnector::initNgramTables()
+{
+	if(!isDbAccessible())
+	{
+		std::cerr << ">> DB 접근 실패, " << sqlite3_errmsg( mSqliteDB) << std::endl;
+			return false;
+	}
+	else
+	{
+		if(openDB())
+		{
+			if(createNgramTables())
+			{
+				setDbConfig();
+				return true;
+			}
+			else
+				return false;
+		}
+		else
+		{
+			std::cerr << ">> Ngram Table 열기 실패, " << sqlite3_errmsg( mSqliteDB) << std::endl;
+			return false;
+		}
+	}	
+}
+
+bool SqliteConnector::insertNgramStr2Int(std::map<String, Integer> &str2int)
+{
+	String sql;
+
+	for(auto iter=str2int.begin(); iter!=str2int.end(); iter++)
+	{
+		auto word = ANSIToUTF8(iter->first.c_str());
+		auto word_id = std::to_string(iter->second);
+
+		sql = "INSERT INTO NGRAM_WORD_ID";
+		sql += " VALUES( '" + word + "', " + word_id + ")";
+		queryDB(sql.c_str());
+	}
+
+	return true;
+}
+
+bool SqliteConnector::insertUnigrams(Integer docID, std::map<Integer, Integer> *unigram, int flag)
+{
+	String sql;
+
+	for(auto iter=unigram->begin(); iter!=unigram->end(); iter++)
+	{
+		auto doc_id = std::to_string(docID);
+		auto word = std::to_string(iter->first);
+		auto freq = std::to_string(iter->second);
+
+		sql = "INSERT INTO ";
+		sql += ( flag == QUESTION)?	"UNIGRAM_QUESTION" : "UNIGRAM_ANSWER";
+		sql += " VALUES( " + doc_id + ", " + word + ", " + freq + ")";
+		queryDB(sql.c_str());
+	}
+
+	return true;
+}
+
+bool SqliteConnector::insertBigrams(Integer docID, std::map<std::pair<Integer, Integer>, Integer> *bigram, int flag)
+{
+	String sql;
+
+	for(auto iter=bigram->begin(); iter!=bigram->end(); iter++)
+	{
+		auto doc_id = std::to_string(docID);
+		auto left_word = std::to_string(iter->first.first);
+		auto right_word = std::to_string(iter->first.second);
+		auto freq = std::to_string(iter->second);
+
+		sql = "INSERT INTO ";
+		sql += ( flag == QUESTION)?	"BIGRAM_QUESTION" : "BIGRAM_ANSWER";
+		sql += " VALUES( " + doc_id + ", " + left_word + ", " + right_word + + ", " + freq + ")";
+		queryDB(sql.c_str());
+	}
+
+	return true;
+}
+
+Integer SqliteConnector::getNgramWordID(const String &term)
+{
+	String  sql;
+	sql = "SELECT WORDID FROM NGRAM_WORD_ID WHERE NAME='";
+	sql += ANSIToUTF8( term.c_str());
+	sql += "'";
+
+	std::vector< std::vector< String>> result = queryDB(sql.c_str());
+	if( result.size() == 0) 
+		return -1;
+	else
+		return atoi( result[ 0].at( 0).c_str());
+}
+
+void SqliteConnector::getUnigramTable(std::map<Integer, Integer> &unigramTable, Integer docID, int flag)
+{
+	String sql;
+	std::vector<std::vector<String>> result;
+
+	sql = "SELECT WORDID, FREQUENCY FROM UNIGRAM_";
+	sql += (flag == QUESTION)?	"QUESTION" : "ANSWER";
+	sql += " WHERE DOCID='";
+	sql += std::to_string(docID);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	for( auto i=0; i<result.size(); i++)
+	{
+		Integer word_id = atoi(result[i].at(0).c_str());
+		Integer freq = atoi(result[i].at(1).c_str());
+		unigramTable.insert(std::make_pair(word_id, freq));
+	}
+}
+
+void SqliteConnector::getBigramTable(std::map<std::pair<Integer, Integer>, Integer> &bigramTable, Integer docID, int flag)
+{
+	String sql;
+	std::vector<std::vector<String>> result;
+
+	sql = "SELECT LEFTWORDID, RIGHTWORDID, FREQUENCY FROM BIGRAM_";
+	sql += (flag == QUESTION)?	"QUESTION" : "ANSWER";
+	sql += " WHERE DOCID='";
+	sql += std::to_string(docID);
+	sql += "'";
+	
+	result = queryDB( sql.c_str());
+
+	for( auto i=0; i<result.size(); i++)
+	{
+		Integer left_word_id = atoi(result[i].at(0).c_str());
+		Integer right_word_id = atoi(result[i].at(1).c_str());
+		Integer freq = atoi(result[i].at(2).c_str());
+		
+		bigramTable.insert(std::make_pair(std::make_pair(left_word_id, right_word_id), freq));
 	}
 }
 
@@ -226,7 +445,6 @@ bool SqliteConnector::updateDB(const std::forward_list<Term<String, Integer>>* w
 	}
 	return true;
 }
-
 
 int SqliteConnector::getDocCount( ){
 	String sql;
@@ -398,6 +616,7 @@ bool SqliteConnector::closeDB() {
 	return true;
 }
 
+
 Integer SqliteConnector::getWordID(const String &term)
 {
 	String  sql;
@@ -545,7 +764,6 @@ std::forward_list<Term<String, Integer>>* SqliteConnector::getDocInfoFlist(Integ
 	
 	return vec_Term;
 }
-
 
 std::vector<Term<String, Integer>> SqliteConnector::getDocInfoVector(Integer doc_id, int flag){
 	

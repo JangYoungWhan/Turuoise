@@ -26,6 +26,7 @@ private:
 private:
 	bool isDbAccessible();
 	bool createDB();
+	bool createNgramTables();
 	void setDbConfig();
 	bool makeDB();	
 
@@ -43,6 +44,17 @@ public:
 	bool updateSynonymTable( int term_id, String synonym);
 	bool delete_m1_DB( int flag);
 	bool closeDB();
+
+public: // using for ngram
+	bool initExistsNgramTable();
+	bool initNgramTables();
+	bool insertNgramStr2Int(std::map<String, Integer> &str2int);
+	bool insertUnigrams(Integer docID, std::map<Integer, Integer> *unigram, int flag);
+	bool insertBigrams(Integer docID, std::map<std::pair<Integer, Integer>, Integer> *bigram, int flag);
+
+	Integer getNgramWordID(const String &term);
+	void getUnigramTable(std::map<Integer, Integer> &unigramTable, Integer docID, int flag);
+	void getBigramTable(std::map<std::pair<Integer, Integer>, Integer> &bigramTable, Integer docID, int flag);
 
 public:
 	Integer getWordID(const String &term);

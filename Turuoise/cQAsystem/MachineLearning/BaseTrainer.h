@@ -80,11 +80,13 @@ protected:
 
 public:
 	BaseTrainer() { };
+
 	BaseTrainer(SqliteConnector* SqlConnector)
 	{
 		this->mProgressBar	= new ProgressBar<Integer>();
 		this->mSqlConnector = SqlConnector;
 	}
+
 	virtual ~BaseTrainer()
 	{
 		delete mProgressBar;
