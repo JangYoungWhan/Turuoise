@@ -5,9 +5,10 @@ CQAsystem::CQAsystem()
 	:mDbName("Turuoise.db")
 {
 	this->mFlstQueryResult			= nullptr;
+	this->mLstQueryResult			= nullptr;
 	this->mSetQueryResult			= nullptr;
 
-	this->mTrainer					= nullptr;
+	this->mFreqTrainer				= nullptr;
 	this->mQueryAnalyzer			= nullptr;
 }
 
@@ -17,13 +18,14 @@ CQAsystem::CQAsystem(String& dbName)
 	this->mFlstQueryResult			= nullptr;
 	this->mSetQueryResult			= nullptr;
 
-	this->mTrainer					= nullptr;
+	this->mFreqTrainer				= nullptr;
 	this->mQueryAnalyzer			= nullptr;
 }
 
 CQAsystem::~CQAsystem()
 {
 	delete this->mFlstQueryResult;
+	delete this->mLstQueryResult;
 	delete this->mSetQueryResult;
 }
 
@@ -67,17 +69,39 @@ void CQAsystem::beginTraning(String& srcDir, bool isTrained)
 		mSqliteConnector->initDB();
 
 		std::cout << "Ready to beginTraning" << std::endl;
-		mTrainer = new FreqBasedTrainer(mSqliteConnector);
-		mTrainer->beginTraning(srcDir, mDocId2DocPath);
+		mFreqTrainer = new FreqBasedTrainer(mSqliteConnector);
+		mFreqTrainer->beginTraning(srcDir, mDocId2DocPath);
 		std::cout << "Training complete" << std::endl << std::endl;
 
-		delete mTrainer;
+		delete mFreqTrainer;
 		delete mSqliteConnector;
 	}
 	else
 	{
 		loadTraningDir(srcDir.c_str());
 	}
+	// training for query likely method
+	#ifdef _NGRAM_TRAINING_
+	if(!isTrained)
+	{
+		mSqliteConnector = new SqliteConnector(mDbName);
+		if(mSqliteConnector->initExistsNgramTable())
+			std::cout << "Delete already existed ngram tables." << std::endl;
+		mSqliteConnector->initNgramTables();
+		mNgramTrainer = new NgramTrainer(mSqliteConnector);
+
+		std::cout << "Ready to begin ngram traning" << std::endl;
+		mNgramTrainer->beginTraning(srcDir, mDocId2DocPath);
+		std::cout << "Ngram training complete" << std::endl << std::endl;
+
+		delete mNgramTrainer;
+		delete mSqliteConnector;
+	}
+	else
+	{
+		loadTraningDir(srcDir.c_str());
+	}
+	#endif
 }
 void CQAsystem::analyzeQuery(String& query)
 {
@@ -85,8 +109,13 @@ void CQAsystem::analyzeQuery(String& query)
 	mSqliteConnector->openDB();
 
 	std::cout << "Ready to analyzeQuery" << std::endl;
+	#ifndef _QUERY_LIKELYHOOD_METHOD_
 	mQueryAnalyzer = new QryAnalCosSim();
 	mQueryAnalyzer->beginQueryAnalysis(query, &mSetQueryResult);
+	#else
+	mQueryAnalyzer = new QryNgram(mSqliteConnector);
+	mQueryAnalyzer->beginQueryAnalysis(query, &mLstQueryResult);
+	#endif
 	std::cout << "Query analysis complete" << std::endl << std::endl;
 
 	delete mSqliteConnector;
@@ -96,14 +125,18 @@ void CQAsystem::calculateScore()
 	mSqliteConnector = new SqliteConnector(mDbName);
 	mSqliteConnector->openDB();
 
-	//mSqliteConnector->updateDocId2Path(mDocId2DocPath); // Do implement plz
 	auto numOfDocs = mDocId2DocPath.size();
 
 	std::cout << "Ready to calculateScore" << std::endl;
 
+	#ifndef _QUERY_LIKELYHOOD_METHOD_
 	mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
 	//mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult);
+	#else
+	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
+	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
+	#endif
 
 	std::cout << "Scoring complete" << std::endl << std::endl;
 

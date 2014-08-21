@@ -36,7 +36,12 @@ Real NaiveBeysian::applyLaplaceSmoothing(Real real)
 
 void NaiveBeysian::beginScoring(std::forward_list<Term<String, Integer>> *query_result)
 {
+	// do nothing.
+}
 
+void NaiveBeysian::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result)
+{
+	// do nothing.
 }
 
 void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result)
@@ -68,6 +73,9 @@ void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, s
 			if(find_result_in_ans != mSetDocInfoInAnswer->end())
 				ans_prob += applyLaplaceSmoothing(prob_w_d(find_result_in_ans->second.getTermFreq(), sumOfAnsFreq));
 		}
+
+		delete mSetDocInfoInQuestion;
+		delete mSetDocInfoInAnswer;
 
 		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
 		score_result[i] = doc;

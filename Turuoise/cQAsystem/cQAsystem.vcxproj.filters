@@ -63,6 +63,18 @@
     <ClCompile Include="Utils\SqliteConnector.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="MachineLearning\NgramTrainer.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\stringutil.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryAnalysis\QryNgram.cpp">
+      <Filter>QueryAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Scoring\DocLanguageModel.cpp">
+      <Filter>Scoring</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QAsystem.h">
@@ -127,6 +139,21 @@
     </ClInclude>
     <ClInclude Include="Utils\winDirent.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineLearning\NgramTrainer.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\NgramInfo.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\stringutil.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryAnalysis\QryNgram.h">
+      <Filter>QueryAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Scoring\DocLanguageModel.h">
+      <Filter>Scoring</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

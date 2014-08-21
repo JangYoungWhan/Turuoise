@@ -8,12 +8,16 @@
 #include "Utils/SqliteConnector.h"
 #include "MachineLearning/BaseTrainer.h"
 #include "MachineLearning/FreqBasedTrainer.h"
+#include "MachineLearning/NgramTrainer.h"
 #include "QueryAnalysis/QueryAnalyzer.h"
 #include "QueryAnalysis/QryAnalCosSim.h"
+#include "QueryAnalysis/QryNgram.h"
 #include "Scoring/ScoreCalculator.h"
 #include "Scoring/CosineSimilarity.h"
 #include "Scoring/NaiveBeysian.h"
+#include "Scoring/DocLanguageModel.h"
 #include "Utils/DocInfo.h"
+
 
 #ifdef _WIN32
 #include "Utils/winDirent.h"
@@ -21,6 +25,8 @@
 #include <dirent.h>
 #endif
 
+//#define _NGRAM_TRAINING_
+#define _QUERY_LIKELYHOOD_METHOD_
 
 class CQAsystem : public QAsystem
 {
@@ -30,12 +36,14 @@ private:
 private:
 	std::map<Integer, String>					mDocId2DocPath;
 	std::forward_list<Term<String, Integer>>	*mFlstQueryResult;
+	std::list<Integer>							*mLstQueryResult;
 	std::set<Term<String, Integer>>				*mSetQueryResult;
-	std::vector<DocInfo>						mScoreResult; // It needs partial sorting.
+	std::vector<DocInfo>						mScoreResult;
 
 private:
 	SqliteConnector*	mSqliteConnector;
-	BaseTrainer*		mTrainer;
+	BaseTrainer*		mFreqTrainer;
+	BaseTrainer*		mNgramTrainer;
 	QueryAnalyzer*		mQueryAnalyzer;
 	ScoreCalculator*	mScoreCalculator;
 	void*				mOutputPrinter; // it does not defined yet

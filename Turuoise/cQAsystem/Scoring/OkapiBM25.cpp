@@ -15,7 +15,12 @@ OkapiBM25::~OkapiBM25()
 
 void OkapiBM25::beginScoring(std::forward_list<Term<String, Integer>> *query_result)
 {
+	// do nothing.
+}
 
+void OkapiBM25::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result)
+{
+	// do nothing.
 }
 
 inline

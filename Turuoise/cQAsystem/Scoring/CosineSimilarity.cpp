@@ -13,6 +13,12 @@ void CosineSimilarity::beginScoring(std::forward_list<Term<String, Integer>> *qu
 
 }
 
+void CosineSimilarity::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result)
+{
+
+}
+
+
 void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result)
 {
 	std::cout << "CosineSimilarity::beginScoring" << std::endl;

@@ -82,24 +82,31 @@
   <ItemGroup>
     <ClCompile Include="cQAsystem.cpp" />
     <ClCompile Include="MachineLearning\FreqBasedTrainer.cpp" />
+    <ClCompile Include="MachineLearning\NgramTrainer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QueryAnalysis\QryAnalCosSim.cpp" />
+    <ClCompile Include="QueryAnalysis\QryNgram.cpp" />
     <ClCompile Include="Scoring\CosineSimilarity.cpp" />
+    <ClCompile Include="Scoring\DocLanguageModel.cpp" />
     <ClCompile Include="Scoring\NaiveBeysian.cpp" />
     <ClCompile Include="Scoring\OkapiBM25.cpp" />
     <ClCompile Include="sqlite\sqlite3.c" />
     <ClCompile Include="Utils\DocInfo.cpp" />
     <ClCompile Include="Utils\RapidXmlParser.cpp" />
     <ClCompile Include="Utils\SqliteConnector.cpp" />
+    <ClCompile Include="Utils\stringutil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cQAsystem.h" />
     <ClInclude Include="MachineLearning\BaseTrainer.h" />
     <ClInclude Include="MachineLearning\FreqBasedTrainer.h" />
+    <ClInclude Include="MachineLearning\NgramTrainer.h" />
     <ClInclude Include="QAsystem.h" />
     <ClInclude Include="QueryAnalysis\QryAnalCosSim.h" />
     <ClInclude Include="QueryAnalysis\QueryAnalyzer.h" />
+    <ClInclude Include="QueryAnalysis\QryNgram.h" />
     <ClInclude Include="Scoring\CosineSimilarity.h" />
+    <ClInclude Include="Scoring\DocLanguageModel.h" />
     <ClInclude Include="Scoring\NaiveBeysian.h" />
     <ClInclude Include="Scoring\OkapiBM25.h" />
     <ClInclude Include="Scoring\ScoreCalculator.h" />
@@ -108,10 +115,12 @@
     <ClInclude Include="Utils\DocInfo.h" />
     <ClInclude Include="Utils\FreqScore.h" />
     <ClInclude Include="Utils\KoreanMorphologicalAnalyzer.h" />
+    <ClInclude Include="Utils\NgramInfo.h" />
     <ClInclude Include="Utils\ProgressBar.h" />
     <ClInclude Include="Utils\RapidXmlParser.h" />
     <ClInclude Include="Utils\SqliteConnector.h" />
     <ClInclude Include="Utils\StdRedef.h" />
+    <ClInclude Include="Utils\stringutil.h" />
     <ClInclude Include="Utils\Term.h" />
     <ClInclude Include="Utils\winDirent.h" />
   </ItemGroup>

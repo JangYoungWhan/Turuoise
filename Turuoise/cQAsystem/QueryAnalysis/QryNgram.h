@@ -1,16 +1,25 @@
-#ifndef _QUERY_ANALYSIS_COSINE_SIMILARITY_H_
-#define _QUERY_ANALYSIS_COSINE_SIMILARITY_H_
+#ifndef _QUERY_NGRAM_H_
+#define _QUERY_NGRAM_H_
 
 
 #include "../Utils/StdRedef.h"
+#include "../Utils/SqliteConnector.h"
+#include "../Utils/stringutil.h"
 #include "QueryAnalyzer.h"
 
 
-class QryAnalCosSim : public QueryAnalyzer
+class QryNgram : public QueryAnalyzer
 {
+private:
+	SqliteConnector* mSqlConnector;
+
+private:
+	std::list<Integer> *refineQuery(String &query);
+
 public:
-	QryAnalCosSim();
-	virtual ~QryAnalCosSim();
+	QryNgram();
+	QryNgram(SqliteConnector* sqlConnector);
+	virtual ~QryNgram();
 
 public:
 	virtual void beginQueryAnalysis(String& query, std::forward_list<Term<String, Integer>> **query_result);

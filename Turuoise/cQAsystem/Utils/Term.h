@@ -11,6 +11,10 @@ protected:
 	int			mScore;
 
 public:
+	Term() {}
+	Term(T_str term) :mTerm(term) {}
+	virtual ~Term() {}
+
 	Term<T_str, T_int>& operator=(const Term& rhs);
 	bool operator<(const Term<T_str, T_int> &rhs) const;
 	bool operator>(const Term<T_str, T_int> &rhs) const;
@@ -18,13 +22,13 @@ public:
 	bool operator!=(const Term<T_str, T_int> &rhs) const;
 
 public:
-	const T_str& getTerm() const		{	return this->mTerm;			};
-	const T_int& getTermFreq() const	{	return this->mTermFreq;		};
-	const int getScore() const			{	return this->mScore;		};
+	const T_str& getTerm() const		{	return this->mTerm;			}
+	const T_int& getTermFreq() const	{	return this->mTermFreq;		}
+	const int getScore() const			{	return this->mScore;		}
 
-	void setTerm(const T_str& term)		{	this->mTerm		= term;		};
-	void setTermFreq(const T_int& tf)	{	this->mTermFreq	= tf;		};
-	void setScore(const int score)		{	this->mScore	= score;	};
+	void setTerm(const T_str& term)		{	this->mTerm		= term;		}
+	void setTermFreq(const T_int& tf)	{	this->mTermFreq	= tf;		}
+	void setScore(const int score)		{	this->mScore	= score;	}
 };
 
 

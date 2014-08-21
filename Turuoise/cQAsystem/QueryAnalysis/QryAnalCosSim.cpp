@@ -15,6 +15,13 @@ void QryAnalCosSim::beginQueryAnalysis(String& query, std::forward_list<Term<Str
 	*query_result = extractIndex2Flist(const_cast<char*>(query.c_str()));
 }
 
+void QryAnalCosSim::beginQueryAnalysis(String& query, std::list<Integer> **query_result)
+{
+	std::cout << "QryAnalCosSim::beginQueryAnalysis()" << std::endl;
+
+	// do nothing.
+}
+
 void QryAnalCosSim::beginQueryAnalysis(String& query, std::set<Term<String, Integer>> **query_result)
 {
 	std::cout << "QryAnalCosSim::beginQueryAnalysis()" << std::endl;
