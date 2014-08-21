@@ -123,7 +123,7 @@ bool FreqBasedTrainer::beginTraning(String& trainingPath, std::map<Integer, Stri
 
 		//std::wcout << url << "!!!" << std::endl;
 		for( int n = 0 ; n < vec_synonym.size() ; n++)
-			mSqlConnector->updateSynonymTable( i, vec_synonym[ n].c_str());
+			mSqlConnector->updateSynonymTable( i, mSqlConnector->ANSIToUTF8( vec_synonym[ n].c_str()));
 
 		fin.close();
 	}
