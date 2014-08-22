@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cQAsystem", "cQAsystem\cQAsystem.vcxproj", "{F620071C-5B32-4D94-9438-ED8AEA84E0C6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "getSynonym", "getSynonym\getSynonym.vcxproj", "{8AD03DEA-246F-49A3-BF52-44C507AF1D16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,10 @@ Global
 		{F620071C-5B32-4D94-9438-ED8AEA84E0C6}.Debug|Win32.Build.0 = Debug|Win32
 		{F620071C-5B32-4D94-9438-ED8AEA84E0C6}.Release|Win32.ActiveCfg = Release|Win32
 		{F620071C-5B32-4D94-9438-ED8AEA84E0C6}.Release|Win32.Build.0 = Release|Win32
+		{8AD03DEA-246F-49A3-BF52-44C507AF1D16}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8AD03DEA-246F-49A3-BF52-44C507AF1D16}.Debug|Win32.Build.0 = Debug|Win32
+		{8AD03DEA-246F-49A3-BF52-44C507AF1D16}.Release|Win32.ActiveCfg = Release|Win32
+		{8AD03DEA-246F-49A3-BF52-44C507AF1D16}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
