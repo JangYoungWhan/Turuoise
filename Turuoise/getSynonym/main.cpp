@@ -11,6 +11,7 @@
 
 // 전역변수
 #define THREAD_NUM 20		// 사용할 스레드 갯수
+bool life_print_progress_thread;
 int progress[ THREAD_NUM];
 std::vector< std::string> vec_word;
 std::vector< std::vector< std::string>> vec_vec_synonym[ THREAD_NUM];
@@ -20,6 +21,7 @@ LARGE_INTEGER Tbegin, Tend, TFrequency;
 
 // 함수
 void getSynonym( int thread_number, int start_index, int end_index);
+void Print_progress( int m);
 
 std::string UTF8ToANSI( const char *pszCode);
 std::string ANSIToUTF8( const char * pszCode);
@@ -53,6 +55,9 @@ int main( void) {
 		return 1;
 	}
 
+	life_print_progress_thread = true;
+	std::thread print_progress_thread( &Print_progress, vec_word.size());
+
 	int step = vec_word.size() / THREAD_NUM;
 	int arr_step[ THREAD_NUM + 1] = { 0,};
 	for( int s1 = 1 ; s1 < THREAD_NUM ; s1++)
@@ -67,6 +72,9 @@ int main( void) {
 		arr_pthread[ t1]->join();
 		delete arr_pthread[ t1];
 	}
+	
+	life_print_progress_thread = false;
+	print_progress_thread.join();
 
 	std::ofstream fout( "synonym.txt");
 	for( int n1 = 0 ; n1 < THREAD_NUM ; n1++) {
@@ -81,7 +89,7 @@ int main( void) {
 
 	
     QueryPerformanceCounter( &Tend);  
-	std::cout << ">>synonym.txt 출력 완료" << std::endl;
+	std::cout << "\n>>synonym.txt 출력 완료" << std::endl;
 	std::cout << ">>수행시간 : [" << ( Tend.QuadPart - Tbegin.QuadPart) / (double)TFrequency.QuadPart << "]s " << std::endl;
 
 	return 0;
@@ -159,6 +167,7 @@ void getSynonym( int thread_number, int start_index, int end_index) {
 		
 		vec_vec_synonym[ thread_number].push_back( vec_synonym);
 		fin.close();
+		progress[ thread_number]++;
 	}
 
 	std::string stemp_HTML = "temp" + std::to_string( thread_number);
@@ -177,6 +186,16 @@ void getSynonym( int thread_number, int start_index, int end_index) {
 }
 
 
+void Print_progress( int m) {
+
+	while( life_print_progress_thread) {
+		int progress_sum = 0;
+		for( int n = 0 ; n < THREAD_NUM ; n++)
+			progress_sum += progress[ n];
+		std::cout << "\r>> " << progress_sum << " / " << m << "추출중...";
+		Sleep( 500);
+	}
+}
 
 
 std::string UTF8ToANSI( const char *pszCode)
