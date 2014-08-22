@@ -18,15 +18,17 @@ private:
 	void calculateQuestionScore();
 	void calculateAnswerScore();
 
-	Real calc_idf(Real df);
-	Real calc_tf(String q, Integer d, Integer f);
-	Real calc_df(String q, Integer f);
-	Integer calc_dl(Integer d, Integer f);
-	Integer calc_avgdl(Integer f);
+	Real cal_idf(Real df) const;
+	Real cal_tf(String q, Integer d, int flag) const;
+	Real cal_df(String q, int flag) const;
+	Integer cal_dl(Integer d, int flag) const;
+	Real cal_avgdl(int flag) const;
+	Real calBM25(Real tf, Real idf, Integer dl, Real avgdl) const;
 
 public:
 	OkapiBM25();
 	OkapiBM25(Integer numOfDoc, SqliteConnector* SqlConnector);
+	OkapiBM25(Real question_ratio, Real answer_ratio, Integer numOfDoc, SqliteConnector* SqlConnector);
 	virtual ~OkapiBM25();
 
 public:

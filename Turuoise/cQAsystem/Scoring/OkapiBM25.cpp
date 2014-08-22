@@ -2,16 +2,16 @@
 
 
 OkapiBM25::OkapiBM25()
-	:BM25_k1(2.0), BM25_b(0.75)
+	:BM25_k1(1.0), BM25_b(0.75)
 { }
-
 OkapiBM25::OkapiBM25(Integer numOfDoc, SqliteConnector* SqlConnector)
-	:ScoreCalculator(numOfDoc, SqlConnector), BM25_k1(2.0), BM25_b(0.75)
+	:BM25_k1(2.0), BM25_b(0.75), ScoreCalculator(numOfDoc, SqlConnector)
 { }
-
+OkapiBM25::OkapiBM25(Real question_ratio, Real answer_ratio, Integer numOfDoc, SqliteConnector* SqlConnector)
+	:BM25_k1(1.0), BM25_b(0.75), ScoreCalculator(question_ratio, answer_ratio, numOfDoc, SqlConnector)
+{ }
 OkapiBM25::~OkapiBM25()
 { }
-
 
 void OkapiBM25::beginScoring(std::forward_list<Term<String, Integer>> *query_result)
 {
@@ -24,41 +24,52 @@ void OkapiBM25::beginScoring(std::list<Integer> *query_result, std::vector<DocIn
 }
 
 inline
-Real OkapiBM25::calc_idf(Real df)
+Real OkapiBM25::cal_idf(Real df) const
 {
 	return log((mNumOfDocs-df+0.5)/(df+0.5));
 }
 
 inline
-Real OkapiBM25::calc_tf(String q, Integer d, Integer f)
+Real OkapiBM25::cal_tf(String q, Integer d, int flag) const
 {
 	
-	return mSqlConnector->getTF(q, d, f);
+	return mSqlConnector->getTF(q, d, flag);
 }
 
 inline 
-Real OkapiBM25::calc_df(String q, Integer f)
+Real OkapiBM25::cal_df(String q, int flag) const
 {
-	return mSqlConnector->getDF(q, f);
+	return mSqlConnector->getDF(q, flag);
 }
 
 inline
-Integer OkapiBM25::calc_dl(Integer d, Integer f)
+Integer OkapiBM25::cal_dl(Integer d, int flag) const
 {
-	//return mSqlConnector->getDocLen(d, f);
-	return 1;
+	return mSqlConnector->getDocTextLength(d, flag);
 }
 
 inline
-Integer OkapiBM25::calc_avgdl(Integer f)
+Real OkapiBM25::cal_avgdl(int flag) const
 {
-	return 1;
+	Integer sumOfDocLen = 0;
+
+	for(auto doc_id=0; doc_id<mNumOfDocs; doc_id++)
+	{
+		sumOfDocLen += mSqlConnector->getDocTextLength(doc_id, flag);
+	}
+
+	return static_cast<Real>(sumOfDocLen) / mNumOfDocs;
 }
 
+inline
+Real OkapiBM25::calBM25(Real tf, Real idf, Integer dl, Real avgdl) const
+{
+	return idf*((tf*(BM25_k1+1))/(tf*(1-BM25_b+BM25_b*(dl/avgdl))));
+}
 
 void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result)
 {
-	std::cout << "NaiveBeysian::beginScoring" << std::endl;
+	std::cout << "OkapiBM25::beginScoring" << std::endl;
 
 	score_result.resize(mNumOfDocs);
 	for(auto doc_id=0; doc_id<mNumOfDocs; doc_id++)
@@ -67,38 +78,35 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 
 		mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(doc_id, QUESTION);
 		mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(doc_id, ANSWER);
-		
-		//auto sumOfQueFreq = getSumOfDocFreq(mSetDocInfoInQuestion);
-		//auto sumOfAnsFreq = getSumOfDocFreq(mSetDocInfoInAnswer);
-		Real que_prob = 0;
-		Real ans_prob = 0;
-		auto avgdl_q = calc_avgdl(QUESTION);
-		auto avgdl_a = calc_avgdl(ANSWER);
+
+		Real que_prob = 0.0;
+		Real ans_prob = 0.0;
+		auto avgdl_q = cal_avgdl(QUESTION);
+		auto avgdl_a = cal_avgdl(ANSWER);
 		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
 		{
 			// calculate question area
 			auto find_result_in_que = mSetDocInfoInQuestion->find(qry->getTerm());
 			if(find_result_in_que != mSetDocInfoInQuestion->end())
 			{
-				auto tf = calc_tf(qry->getTerm(), doc_id, QUESTION);
-				auto df = calc_df(qry->getTerm(), QUESTION);				
-				auto idf = calc_idf(df);
-				auto curdl = calc_dl(doc_id, QUESTION);
+				auto tf = cal_tf(qry->getTerm(), doc_id, QUESTION);
+				auto df = cal_df(qry->getTerm(), QUESTION);				
+				auto idf = cal_idf(df);
+				auto curdl = cal_dl(doc_id, QUESTION);
 
-				que_prob += idf*((tf*(BM25_k1+1))/(tf*(1-BM25_b+BM25_b*(curdl/avgdl_q))));
+				que_prob += calBM25(tf, idf, curdl, avgdl_q);
 			}
-
 
 			// calculate answer area
 			auto find_result_in_ans = mSetDocInfoInAnswer->find(qry->getTerm());
 			if(find_result_in_ans != mSetDocInfoInAnswer->end())
 			{
-				auto tf = calc_tf(qry->getTerm(), doc_id, ANSWER);
-				auto df = calc_df(qry->getTerm(), ANSWER);				
-				auto idf = calc_idf(df);
-				auto curdl = calc_dl(doc_id, ANSWER);
+				auto tf = cal_tf(qry->getTerm(), doc_id, ANSWER);
+				auto df = cal_df(qry->getTerm(), ANSWER);				
+				auto idf = cal_idf(df);
+				auto curdl = cal_dl(doc_id, ANSWER);
 
-				que_prob += idf*((tf*(BM25_k1+1))/(tf*(1-BM25_b+BM25_b*(curdl/avgdl_q))));
+				ans_prob += calBM25(tf, idf, curdl, avgdl_a);
 			}
 		}
 		

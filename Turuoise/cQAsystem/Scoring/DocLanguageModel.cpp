@@ -110,6 +110,7 @@ Real DocLanguageModel::calProbNgram(const Integer c_ngram, const Integer c_total
 	return static_cast<Real>(c_ngram)/c_total_ngram;
 }
 
+inline
 Real DocLanguageModel::make_qMLE(const Real p_bigram, const Real p_unigram) const
 {
 	return (1.0-MLE_PARAM)*p_bigram+MLE_PARAM*p_unigram;

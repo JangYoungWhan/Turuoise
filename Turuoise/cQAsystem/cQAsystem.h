@@ -15,6 +15,7 @@
 #include "Scoring/ScoreCalculator.h"
 #include "Scoring/CosineSimilarity.h"
 #include "Scoring/NaiveBeysian.h"
+#include "Scoring/OkapiBM25.h"
 #include "Scoring/DocLanguageModel.h"
 #include "Utils/DocInfo.h"
 
@@ -26,7 +27,7 @@
 #endif
 
 //#define _NGRAM_TRAINING_
-#define _QUERY_LIKELYHOOD_METHOD_
+//#define _QUERY_LIKELYHOOD_METHOD_
 
 class CQAsystem : public QAsystem
 {
