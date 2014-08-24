@@ -37,7 +37,7 @@ int main( void) {
 	std::cout << ">>현재 스레드 [" << THREAD_NUM << "]사용. 코드에서 갯수 수정" << std::endl;
 	std::ifstream fin_( "word.txt");
 
-	if( fin_.is_open() == false) { // 텍스트 문서는 ANSI로 코딩되어 있다고 가정함. 아닐시 그에 맞게 유니코드 변형함수부분만 제거
+	if( fin_.is_open() == false) { 
 		std::cout << ">>word.txt 파열열기 실패" << std::endl;
 		return 0;
 	}
@@ -81,7 +81,8 @@ int main( void) {
 		for( int n2 = 0 ; n2 < vec_vec_synonym[ n1].size() ; n2++) {
 			std::vector< std::string>& vec = vec_vec_synonym[ n1].at( n2);
 			for( int n3 = 0 ; n3 < vec.size() ; n3++)
-				fout << vec[ n3] << "\t";
+				//fout << vec[ n3].c_str() << "\t";		// 텍스트 파일이 ANSI인코딩일 경우
+				fout << ANSIToUTF8( vec[ n3].c_str()) << "\t";	// 텍스트 파일이 UTF8인코딩 일경우
 			fout << "\n";
 		}
 	}
@@ -109,7 +110,8 @@ void getSynonym( int thread_number, int start_index, int end_index) {
 		std::string term = vec_word[ l1];
 
 		std::wstring url = dic_url;
-		url += utf8_to_utf16( ANSIToUTF8( term.c_str()));
+		//url += utf8_to_utf16( ANSIToUTF8( term.c_str()));	// word.txt가 ANSI인코딩일 경우
+		url += utf8_to_utf16( term.c_str());	// word.txt 가 utf8 인코딩일경우
 
 		HRESULT hr = URLDownloadToFile( NULL, url.c_str(), temp_HTML.c_str(), NULL, NULL);
 
@@ -128,7 +130,11 @@ void getSynonym( int thread_number, int start_index, int end_index) {
 		}
 
 		std::vector< std::string> vec_synonym;
-		vec_synonym.push_back( term);	// 0번 인덱스의 값은 유의어를 찾은 단어
+		
+		// 0번 인덱스의 값은 유의어를 찾은 단어
+		//vec_synonym.push_back( term);	// 텍스트 파일이 ANSI인코딩일 경우
+		vec_synonym.push_back( UTF8ToANSI( term.c_str()));	// 텍스트파일이 utf8 인코딩일 경우
+
 		char buf[ 4096];
 		while( fin.getline( buf, 4096)) {
 			if( *buf == '\0' || *buf == '\n' || *buf == '\r')

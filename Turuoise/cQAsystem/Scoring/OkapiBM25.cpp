@@ -76,6 +76,53 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 	{
 		mProgressBar->dispalyPrgressBar(doc_id, mNumOfDocs-1);
 
+		
+		mVectorDocInfoInQuestion = mSqlConnector->getDocInfoVector(doc_id, QUESTION);
+		mVectorDocInfoInAnswer = mSqlConnector->getDocInfoVector(doc_id, ANSWER);
+		
+		Real que_prob = 0.0;
+		Real ans_prob = 0.0;
+		auto avgdl_q = cal_avgdl(QUESTION);
+		auto avgdl_a = cal_avgdl(ANSWER);
+		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
+		{
+			// calculate question area
+			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
+				std::string str1 = qry->getTerm();
+				std::string str2 = mVectorDocInfoInQuestion[ n].getTerm();
+				double levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+				
+				if( levenshtein_score <= 0.5)
+						continue;
+				auto tf = cal_tf(qry->getTerm(), doc_id, QUESTION);
+				auto df = cal_df(qry->getTerm(), QUESTION);				
+				auto idf = cal_idf(df);
+				auto curdl = cal_dl(doc_id, QUESTION);
+
+				que_prob += ( calBM25(tf, idf, curdl, avgdl_q) * levenshtein_score);
+			}
+
+			// calculate answer area
+			for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
+				std::string str1 = qry->getTerm();
+				std::string str2 = mVectorDocInfoInAnswer[ n].getTerm();
+				double levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+				
+				if( levenshtein_score <= 0.5)
+						continue;
+			
+				auto tf = cal_tf(qry->getTerm(), doc_id, ANSWER);
+				auto df = cal_df(qry->getTerm(), ANSWER);				
+				auto idf = cal_idf(df);
+				auto curdl = cal_dl(doc_id, ANSWER);
+
+				ans_prob += ( calBM25(tf, idf, curdl, avgdl_a) * levenshtein_score);
+				ans_prob = 0;
+			}
+		}
+		
+
+		/*
 		mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(doc_id, QUESTION);
 		mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(doc_id, ANSWER);
 
@@ -109,6 +156,7 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 				ans_prob += calBM25(tf, idf, curdl, avgdl_a);
 			}
 		}
+		*/
 		
 		DocInfo doc(doc_id, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
 		score_result[doc_id] = doc;

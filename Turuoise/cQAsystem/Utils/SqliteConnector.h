@@ -69,6 +69,7 @@ public:
 	std::set<Term<String, Integer>>* getDocInfoSet(Integer doc_id, int flag);
 	std::map<String, FreqScore<Integer, Integer>>* getDocInfoMap(Integer doc_id, int flag);
 	std::vector<String> getSynonym( int word_id);
+	bool createSynonymTable();
 
 	// docid가 존재하지 않으면 -1, 존재하면 TEXTLENGTH반환
 	int getDocTextLength( Integer doc_id, int flag);

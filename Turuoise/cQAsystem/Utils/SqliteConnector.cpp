@@ -862,6 +862,26 @@ std::vector<String> SqliteConnector::getSynonym( int word_id) {
 }
 
 
+bool SqliteConnector::createSynonymTable() {
+	String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='SYNONYM'";
+	std::vector< std::vector< String>> result;
+
+	result = queryDB( sql.c_str());
+	
+	if( result.size() == 0) {
+		std::cout << "db»ý¼º" << std::endl;
+		sql =	"CREATE TABLE 'SYNONYM'( "	\
+				"WORDID		INT		NOT	NULL, "	\
+				"NAME		TEXT	NOT	NULL);";
+	
+		queryDB( sql.c_str());
+		/*if( sqlite3_exec( mSqliteDB, sql.c_str(), 0, 0, 0) != SQLITE_OK )
+			return false;*/
+	}
+	return true;
+}
+
+
 int SqliteConnector::getDocTextLength( Integer doc_id, int flag) {
 	String sql;
 	std::vector< std::vector< String>> result;
