@@ -58,7 +58,7 @@ void MorphemeAnalyzer::parsing_out( FILE *fp, KPAR_PSENT kpr, std::vector< VECMo
 */
 void MorphemeAnalyzer::put_tree( KPAR_PWORD node, int depth, std::vector< VECMorpheme>& vec_morphemes)	
 {
-	int i, j;
+	int i;
 	int opt = mode.parse.put_morp;
 	KPAR_PWORD p;
 

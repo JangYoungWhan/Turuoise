@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="cQAsystem.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -74,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="Scoring\DocLanguageModel.cpp">
       <Filter>Scoring</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Utils\MorphemeAnalyzer.cpp">
       <Filter>Utils</Filter>
