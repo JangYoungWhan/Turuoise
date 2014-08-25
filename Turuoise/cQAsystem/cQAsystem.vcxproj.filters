@@ -75,6 +75,9 @@
     <ClCompile Include="Scoring\DocLanguageModel.cpp">
       <Filter>Scoring</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\MorphemeAnalyzer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QAsystem.h">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="Scoring\DocLanguageModel.h">
       <Filter>Scoring</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\MorphemeAnalyzer.hpp">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

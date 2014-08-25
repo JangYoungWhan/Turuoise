@@ -11,6 +11,8 @@
 #include <time.h>
 #include <codecvt>
 
+#include "Utils\MorphemeAnalyzer.hpp"
+
 
 //#define _TRAINING_MODE_
 
@@ -23,6 +25,9 @@ int main(int argc, char* argv[])
 	String QUERY = "영어 super를 한글로 표기할 때 수퍼라고 해야 하나요, 슈퍼라고 해야 하나요?Superman, supermarket 등은 수퍼맨, 수퍼마켓인가요, 슈퍼맨, 슈퍼마켓인가요";
 	Integer DISPLAY_LIMIT = 10;
 
+	MA::MorphemeAnalyzer analyzer;
+	std::vector< MA::VECMorpheme> test = analyzer.Extract( "바람과 함께 사라지다.");
+
 	/* 유의어추출을 위해 word.txt를 얻는부분임. 출력물은 word.txt
 	std::cout << "=== 유의어추출을 위해 word.txt를 얻는부분임 ===" << std::endl;
 	std::ofstream fout("word.txt");
@@ -34,6 +39,8 @@ int main(int argc, char* argv[])
 	fout.close();
 	*/
 
+
+	/*
 	// 추출된 유의어 파일로 부터 db의 유의어 테이블에 추가함. 유의어가 저장된 파일은 synonym.txt
 	SqliteConnector *mSqliteConnector = new SqliteConnector( TRAINING_DB_NAME);
 	mSqliteConnector->initDB();
@@ -57,6 +64,7 @@ int main(int argc, char* argv[])
 				mSqliteConnector->updateSynonymTable( word_id, utfconv.to_bytes( token));
 		}
 	}
+	*/
 
 	/*
 	QAsystem *pQAsystem = new CQAsystem(TRAINING_DB_NAME);

@@ -57,7 +57,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>KLT2000-TEST.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>parse.lib;KLT2000-TEST.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -76,7 +76,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>KLT2000-TEST.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>parse.lib;KLT2000-TEST.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -92,6 +92,7 @@
     <ClCompile Include="Scoring\OkapiBM25.cpp" />
     <ClCompile Include="sqlite\sqlite3.c" />
     <ClCompile Include="Utils\DocInfo.cpp" />
+    <ClCompile Include="Utils\MorphemeAnalyzer.cpp" />
     <ClCompile Include="Utils\RapidXmlParser.cpp" />
     <ClCompile Include="Utils\SqliteConnector.cpp" />
     <ClCompile Include="Utils\stringutil.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="Utils\DocInfo.h" />
     <ClInclude Include="Utils\FreqScore.h" />
     <ClInclude Include="Utils\KoreanMorphologicalAnalyzer.h" />
+    <ClInclude Include="Utils\MorphemeAnalyzer.hpp" />
     <ClInclude Include="Utils\NgramInfo.h" />
     <ClInclude Include="Utils\ProgressBar.h" />
     <ClInclude Include="Utils\RapidXmlParser.h" />
