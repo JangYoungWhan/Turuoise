@@ -4,6 +4,7 @@
 
 #include <list>
 #include <string>
+#include <Windows.h>
 #include "StdRedef.h"
 
 // it is used for ignore ASCII and Korean symbols.
@@ -17,7 +18,8 @@ unsigned const char ASCII_TAB	= 0x09;
 void splitStringToNgram(std::list<String> *dest, const String &source, const char *delimiter=" ", bool keepEmpty=false);
 void replaceAll(String &dest, const String &src, const String &pattern, const String &replace);
 void filterSentence(String &dst, const String &src);
-
+std::string convertFromUTF8ToANSI( const char *pszCode);
+std::string convertFromANSIToUTF8( const char * pszCode);
 
 inline
 int isWhiteSpace(const char &ch)

@@ -153,6 +153,21 @@ const String& CQAsystem::getXmlPathFromDocID(Integer doc_id) const
 	return find_result->second;
 }
 
+const std::vector<DocInfo>* CQAsystem::sortResult(const Integer show_limit)
+{
+	std::partial_sort(mScoreResult.begin(), mScoreResult.begin()+show_limit, mScoreResult.end());
+	std::vector<DocInfo> *sorted_result = new std::vector<DocInfo>();
+
+	auto iter = mScoreResult.begin();
+	for(int i=0; i<show_limit; i++)
+	{
+		sorted_result->push_back(*iter);
+		iter++;
+	}
+
+	return sorted_result;
+}
+
 void CQAsystem::dispalyResult(const Integer show_limit)
 {
 	std::cout << "Ready to dispalyResult" << std::endl;

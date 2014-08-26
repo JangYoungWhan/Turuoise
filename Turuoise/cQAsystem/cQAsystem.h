@@ -62,6 +62,7 @@ public:
 	virtual void beginTraning(String& srcDir, bool isTrained);
 	virtual void analyzeQuery(String& query);
 	virtual void calculateScore();
+	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit);
 	virtual void dispalyResult(const Integer show_limit);
 };
 

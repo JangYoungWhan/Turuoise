@@ -1,20 +1,65 @@
 /*
  * Title	: CQA system implemented in C++
- * Author	: YW. Jang, Zizo
+ * Author	: YW. Jang, JI. Jo
  */
 
 
 #include <iostream>
 #include <string>
-#include "QAsystem.h"
-#include "CQAsystem.h"
 #include <time.h>
 #include <codecvt>
-
+#include "QAsystem.h"
+#include "CQAsystem.h"
+#include "Utils/stringutil.h"
 #include "Utils\MorphemeAnalyzer.hpp"
 
-
 //#define _TRAINING_MODE_
+struct QueryInput
+{
+	int qum;
+	String query;
+};
+
+QueryInput readQueryXml(const String &query_xml_file)
+{
+	rapidxml::file<> xml_file(query_xml_file.c_str());
+	rapidxml::xml_document<> xml_doc;
+
+	xml_doc.parse<0>(xml_file.data());
+
+	rapidxml::xml_node<char> *query_node = xml_doc.first_node("query");
+
+	rapidxml::xml_node<char> *qnum_node = query_node->first_node("qnum");;
+	rapidxml::xml_node<char> *text_node = query_node->first_node("text");
+
+	QueryInput query;
+	query.qum	= atoi(convertFromUTF8ToANSI(qnum_node->value()).c_str());
+	query.query = convertFromUTF8ToANSI(text_node->value());
+
+	return query;
+}
+
+bool writeResultXml(int qnum, const std::vector<DocInfo> *cqa_result)
+{
+	const String QUERY_BEGIN_TAG		= "<query>";
+	const String QUERY_END_TAG			= "</query>";
+	const String QUERY_NUM_BEGIN_TAG	= "<qnum>";
+	const String QUERY_NUM_END_TAG		= "</qnum>";
+	const String RANK_BEGIN_TAG			= "<rank>";
+	const String RANK_END_TAG			= "</rank>";
+
+	std::cout << QUERY_BEGIN_TAG << QUERY_NUM_BEGIN_TAG << qnum << QUERY_NUM_END_TAG << std::endl;
+	std::cout << RANK_BEGIN_TAG << std::endl;
+	for(auto iter=cqa_result->begin(); iter!=cqa_result->end(); iter++)
+	{
+		std::cout << *iter << std::endl;
+	}
+	std::cout << RANK_END_TAG << std::endl;
+	std::cout << QUERY_END_TAG << std::endl;
+
+	return true;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -25,8 +70,11 @@ int main(int argc, char* argv[])
 	String QUERY = "영어 super를 한글로 표기할 때 수퍼라고 해야 하나요, 슈퍼라고 해야 하나요?Superman, supermarket 등은 수퍼맨, 수퍼마켓인가요, 슈퍼맨, 슈퍼마켓인가요";
 	Integer DISPLAY_LIMIT = 10;
 
+	// 형태소 분석을 수행한다.
+	/*
 	MA::MorphemeAnalyzer analyzer;
 	std::vector< MA::VECMorpheme> test = analyzer.Extract( "바람과 함께 사라지다.");
+	*/
 
 	/* 유의어추출을 위해 word.txt를 얻는부분임. 출력물은 word.txt
 	std::cout << "=== 유의어추출을 위해 word.txt를 얻는부분임 ===" << std::endl;
@@ -66,7 +114,7 @@ int main(int argc, char* argv[])
 	}
 	*/
 
-	/*
+	
 	QAsystem *pQAsystem = new CQAsystem(TRAINING_DB_NAME);
 
 	#ifdef _TRAINING_MODE_
@@ -79,12 +127,16 @@ int main(int argc, char* argv[])
 	pQAsystem->beginTraning(TRAINING_DATA_PATH, true);
 	#endif
 
-	pQAsystem->analyzeQuery(QUERY);
+	auto qry_info = readQueryXml("query.xml");
+	pQAsystem->analyzeQuery(qry_info.query);
 	pQAsystem->calculateScore();
-	pQAsystem->dispalyResult(DISPLAY_LIMIT);
+	auto result = pQAsystem->sortResult(DISPLAY_LIMIT);
+	//pQAsystem->dispalyResult(DISPLAY_LIMIT);
+	writeResultXml(qry_info.qum, result);
+	delete result;
 
 	delete pQAsystem;
-	*/
+	
 	return 0;
 }
 

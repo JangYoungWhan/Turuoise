@@ -3,7 +3,9 @@
 
 
 #include <string>
+#include <vector>
 #include "Utils/StdRedef.h"
+#include "Utils/DocInfo.h"
 
 
 class QAsystem
@@ -22,6 +24,7 @@ public:
 	virtual void calculateScore() = 0;
 
 	// Phase 4 : Refine score and print Q-A pairs in descending order.
+	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit) = 0;
 	virtual void dispalyResult(const Integer show_limit) = 0;
 };
 

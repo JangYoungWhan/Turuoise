@@ -37,7 +37,7 @@ bool DocInfo::operator>(const DocInfo &rhs) const
 
 std::ostream& operator<<(std::ostream& os, const DocInfo& doc)
 {
-	os << "DocID : " << doc.mDocID << "\tScore : " << doc.mScore;
+	os << doc.mDocID << "\t" << doc.mScore;
 
 	return os;
 }
