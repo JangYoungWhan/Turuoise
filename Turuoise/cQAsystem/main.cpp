@@ -20,23 +20,30 @@ struct QueryInput
 	String query;
 };
 
-QueryInput readQueryXml(const String &query_xml_file)
+std::list<QueryInput>* readQueryXml(const String &query_xml_file)
 {
 	rapidxml::file<> xml_file(query_xml_file.c_str());
 	rapidxml::xml_document<> xml_doc;
 
 	xml_doc.parse<0>(xml_file.data());
+	std::list<QueryInput>* pQueryInput = new std::list<QueryInput>();
 
-	rapidxml::xml_node<char> *query_node = xml_doc.first_node("query");
+	rapidxml::xml_node<char> *curNode = xml_doc.first_node("query");
+	while(curNode != nullptr)
+	{
+		rapidxml::xml_node<char> *qnum_node = curNode->first_node("qnum");
+		rapidxml::xml_node<char> *text_node = curNode->first_node("text");
 
-	rapidxml::xml_node<char> *qnum_node = query_node->first_node("qnum");;
-	rapidxml::xml_node<char> *text_node = query_node->first_node("text");
+		QueryInput query;
+		query.qum	= atoi(convertFromUTF8ToANSI(qnum_node->value()).c_str());
+		query.query = convertFromUTF8ToANSI(text_node->value());
+		//std::cout << query.qum << std::endl << query.query << std::endl;
+		curNode = curNode->next_sibling();
 
-	QueryInput query;
-	query.qum	= atoi(convertFromUTF8ToANSI(qnum_node->value()).c_str());
-	query.query = convertFromUTF8ToANSI(text_node->value());
+		pQueryInput->push_back(query);
+	}
 
-	return query;
+	return pQueryInput;
 }
 
 bool writeResultXml(int qnum, const std::vector<DocInfo> *cqa_result)
@@ -48,14 +55,36 @@ bool writeResultXml(int qnum, const std::vector<DocInfo> *cqa_result)
 	const String RANK_BEGIN_TAG			= "<rank>";
 	const String RANK_END_TAG			= "</rank>";
 
-	std::cout << QUERY_BEGIN_TAG << QUERY_NUM_BEGIN_TAG << qnum << QUERY_NUM_END_TAG << std::endl;
-	std::cout << RANK_BEGIN_TAG << std::endl;
-	for(auto iter=cqa_result->begin(); iter!=cqa_result->end(); iter++)
+	std::ofstream outFile("result.xml", std::ios::app);
+	outFile.exceptions(std::ifstream::eofbit | std::ifstream::failbit | std::ifstream::badbit);
+
+	try
 	{
-		std::cout << *iter << std::endl;
+		outFile << QUERY_BEGIN_TAG << QUERY_NUM_BEGIN_TAG << qnum << QUERY_NUM_END_TAG << std::endl;
+		outFile << RANK_BEGIN_TAG << std::endl;
+		for(auto iter=cqa_result->begin(); iter!=cqa_result->end(); iter++)
+		{
+			outFile << *iter << std::endl;
+		}
+		outFile << RANK_END_TAG << std::endl;
+		outFile << QUERY_END_TAG << std::endl;
 	}
-	std::cout << RANK_END_TAG << std::endl;
-	std::cout << QUERY_END_TAG << std::endl;
+	catch(const std::ifstream::failure& e)
+	{
+		std::cerr << "Exception is occured when reading a file!" << std::endl;
+		std::cerr << "Exception: " << e.what() << std::endl;
+		return false;
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Exception: " << e.what() << std::endl;
+		return false;
+	}
+	catch(...)
+	{
+		std::cerr << "Undefined exception!" << std::endl;
+		return false;
+	}
 
 	return true;
 }
@@ -127,13 +156,17 @@ int main(int argc, char* argv[])
 	pQAsystem->beginTraning(TRAINING_DATA_PATH, true);
 	#endif
 
-	auto qry_info = readQueryXml("query.xml");
-	pQAsystem->analyzeQuery(qry_info.query);
-	pQAsystem->calculateScore();
-	auto result = pQAsystem->sortResult(DISPLAY_LIMIT);
-	//pQAsystem->dispalyResult(DISPLAY_LIMIT);
-	writeResultXml(qry_info.qum, result);
-	delete result;
+	auto *qry_info = readQueryXml("query.xml");
+	for(auto iter = qry_info->begin(); iter!=qry_info->end(); iter++)
+	{
+		pQAsystem->analyzeQuery(iter->query);
+		pQAsystem->calculateScore();
+		auto *result = pQAsystem->sortResult(DISPLAY_LIMIT);
+		//pQAsystem->dispalyResult(DISPLAY_LIMIT);
+		writeResultXml(iter->qum, result);
+		delete result;
+	}
+	delete qry_info;
 
 	delete pQAsystem;
 	
