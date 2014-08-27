@@ -14,6 +14,7 @@
 #include "Utils\MorphemeAnalyzer.hpp"
 
 //#define _TRAINING_MODE_
+
 struct QueryInput
 {
 	int qum;
@@ -55,11 +56,15 @@ bool writeResultXml(int qnum, const std::vector<DocInfo> *cqa_result)
 	const String RANK_BEGIN_TAG			= "<rank>";
 	const String RANK_END_TAG			= "</rank>";
 
-	std::ofstream outFile("result.xml", std::ios::app);
+	std::ofstream outFile;
 	outFile.exceptions(std::ifstream::eofbit | std::ifstream::failbit | std::ifstream::badbit);
 
 	try
 	{
+		outFile.open("result.xml", std::ios::app);
+		if(outFile.fail())
+			std::cerr << "Cannot make a file : result.xml" << std::endl;
+
 		outFile << QUERY_BEGIN_TAG << QUERY_NUM_BEGIN_TAG << qnum << QUERY_NUM_END_TAG << std::endl;
 		outFile << RANK_BEGIN_TAG << std::endl;
 		for(auto iter=cqa_result->begin(); iter!=cqa_result->end(); iter++)
