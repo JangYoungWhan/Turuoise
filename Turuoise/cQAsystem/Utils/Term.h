@@ -13,6 +13,7 @@ protected:
 public:
 	Term() {}
 	Term(T_str term) :mTerm(term) {}
+	Term(T_str term, T_int TermFreq) :mTerm(term), mTermFreq( TermFreq) {}
 	virtual ~Term() {}
 
 	Term<T_str, T_int>& operator=(const Term& rhs);

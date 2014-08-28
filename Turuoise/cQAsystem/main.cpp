@@ -101,7 +101,8 @@ int main(int argc, char* argv[])
 
 	String TRAINING_DATA_PATH = "../../../../training_data/";
 	String TRAINING_DB_NAME = "Turuoise.db";
-	String QUERY = "영어 super를 한글로 표기할 때 수퍼라고 해야 하나요, 슈퍼라고 해야 하나요?Superman, supermarket 등은 수퍼맨, 수퍼마켓인가요, 슈퍼맨, 슈퍼마켓인가요";
+	//String QUERY = "영어 super를 한글로 표기할 때 수퍼라고 해야 하나요, 슈퍼라고 해야 하나요?Superman, supermarket 등은 수퍼맨, 수퍼마켓인가요, 슈퍼맨, 슈퍼마켓인가요";
+	String QUERY = "돌을 맞혀 넘어뜨리다에서 맞혀는 [마처, 마쳐, 마텨] 중 어떻게 발성하는 것이 맞는 말인가요?";
 	Integer DISPLAY_LIMIT = 10;
 
 	// 형태소 분석을 수행한다.
@@ -141,13 +142,17 @@ int main(int argc, char* argv[])
 
 		std::string narrow = utfconv.to_bytes( token);     
 		int word_id = mSqliteConnector->getWordID( mSqliteConnector->UTF8ToANSI( narrow.c_str()));
-		if( word_id != -1 && token != NULL) {
+		if( word_id != -1) {
+			if( ( token = wcstok( NULL, L" \t\n\r")) != NULL) {
+				mSqliteConnector->updateSynonymTable( word_id, narrow);
+				mSqliteConnector->updateSynonymTable( word_id, utfconv.to_bytes( token));
+			}
 			while( ( token = wcstok( NULL, L" \t\n\r")) != NULL)
 				mSqliteConnector->updateSynonymTable( word_id, utfconv.to_bytes( token));
 		}
 	}
+	delete mSqliteConnector;
 	*/
-
 	
 	QAsystem *pQAsystem = new CQAsystem(TRAINING_DB_NAME);
 
@@ -161,7 +166,11 @@ int main(int argc, char* argv[])
 	pQAsystem->beginTraning(TRAINING_DATA_PATH, true);
 	#endif
 
-	auto *qry_info = readQueryXml("query.xml");
+	pQAsystem->analyzeQuery( QUERY);
+	pQAsystem->calculateScore();
+	pQAsystem->dispalyResult(DISPLAY_LIMIT);
+
+/*	auto *qry_info = readQueryXml("query.xml");
 	for(auto iter = qry_info->begin(); iter!=qry_info->end(); iter++)
 	{
 		pQAsystem->analyzeQuery(iter->query);
@@ -172,7 +181,7 @@ int main(int argc, char* argv[])
 		delete result;
 	}
 	delete qry_info;
-
+*/
 	delete pQAsystem;
 	
 	return 0;

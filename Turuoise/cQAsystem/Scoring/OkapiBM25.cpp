@@ -13,6 +13,7 @@ OkapiBM25::OkapiBM25(Real question_ratio, Real answer_ratio, Integer numOfDoc, S
 OkapiBM25::~OkapiBM25()
 { }
 
+/*
 void OkapiBM25::beginScoring(std::forward_list<Term<String, Integer>> *query_result)
 {
 	// do nothing.
@@ -22,6 +23,7 @@ void OkapiBM25::beginScoring(std::list<Integer> *query_result, std::vector<DocIn
 {
 	// do nothing.
 }
+*/
 
 inline
 Real OkapiBM25::cal_idf(Real df) const
@@ -67,7 +69,7 @@ Real OkapiBM25::calBM25(Real tf, Real idf, Integer dl, Real avgdl) const
 	return idf*((tf*(BM25_k1+1))/(tf*(1-BM25_b+BM25_b*(dl/avgdl))));
 }
 
-void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result)
+void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
 {
 	std::cout << "OkapiBM25::beginScoring" << std::endl;
 
@@ -76,87 +78,86 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 	{
 		mProgressBar->dispalyPrgressBar(doc_id, mNumOfDocs-1);
 
-		
-		mVectorDocInfoInQuestion = mSqlConnector->getDocInfoVector(doc_id, QUESTION);
-		mVectorDocInfoInAnswer = mSqlConnector->getDocInfoVector(doc_id, ANSWER);
-		
 		Real que_prob = 0.0;
 		Real ans_prob = 0.0;
 		auto avgdl_q = cal_avgdl(QUESTION);
 		auto avgdl_a = cal_avgdl(ANSWER);
-		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
-		{
-			// calculate question area
-			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
-				std::string str1 = qry->getTerm();
-				std::string str2 = mVectorDocInfoInQuestion[ n].getTerm();
-				double levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+		
+		if( levenshtein > EPSILON) {
+		
+			mVectorDocInfoInQuestion = mSqlConnector->getDocInfoVector(doc_id, QUESTION);
+			mVectorDocInfoInAnswer = mSqlConnector->getDocInfoVector(doc_id, ANSWER);
+		
+			
+			for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
+			{
+				// calculate question area
+				for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
+					std::string str1 = qry->getTerm();
+					std::string str2 = mVectorDocInfoInQuestion[ n].getTerm();
+					double levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
 				
-				if( levenshtein_score <= 0.5)
-						continue;
-				auto tf = cal_tf(qry->getTerm(), doc_id, QUESTION);
-				auto df = cal_df(qry->getTerm(), QUESTION);				
-				auto idf = cal_idf(df);
-				auto curdl = cal_dl(doc_id, QUESTION);
+					if( levenshtein_score <= 0.5)
+							continue;
+					auto tf = cal_tf(qry->getTerm(), doc_id, QUESTION);
+					auto df = cal_df(qry->getTerm(), QUESTION);				
+					auto idf = cal_idf(df);
+					auto curdl = cal_dl(doc_id, QUESTION);
 
-				que_prob += ( calBM25(tf, idf, curdl, avgdl_q) * levenshtein_score);
-			}
+					que_prob += ( calBM25(tf, idf, curdl, avgdl_q) * levenshtein_score * levenshtein);
+				}
 
-			// calculate answer area
-			for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
-				std::string str1 = qry->getTerm();
-				std::string str2 = mVectorDocInfoInAnswer[ n].getTerm();
-				double levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+				// calculate answer area
+				for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
+					std::string str1 = qry->getTerm();
+					std::string str2 = mVectorDocInfoInAnswer[ n].getTerm();
+					double levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
 				
-				if( levenshtein_score <= 0.5)
+					if( levenshtein_score <= 0.5)
 						continue;
 			
-				auto tf = cal_tf(qry->getTerm(), doc_id, ANSWER);
-				auto df = cal_df(qry->getTerm(), ANSWER);				
-				auto idf = cal_idf(df);
-				auto curdl = cal_dl(doc_id, ANSWER);
+					auto tf = cal_tf(qry->getTerm(), doc_id, ANSWER);
+					auto df = cal_df(qry->getTerm(), ANSWER);				
+					auto idf = cal_idf(df);
+					auto curdl = cal_dl(doc_id, ANSWER);
 
-				ans_prob += ( calBM25(tf, idf, curdl, avgdl_a) * levenshtein_score);
-				ans_prob = 0;
+					ans_prob += ( calBM25(tf, idf, curdl, avgdl_a) * levenshtein_score * levenshtein);
+					ans_prob = 0;
+				}
 			}
 		}
+		else {
 		
+			mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(doc_id, QUESTION);
+			mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(doc_id, ANSWER);
 
-		/*
-		mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(doc_id, QUESTION);
-		mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(doc_id, ANSWER);
-
-		Real que_prob = 0.0;
-		Real ans_prob = 0.0;
-		auto avgdl_q = cal_avgdl(QUESTION);
-		auto avgdl_a = cal_avgdl(ANSWER);
-		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
-		{
-			// calculate question area
-			auto find_result_in_que = mSetDocInfoInQuestion->find(qry->getTerm());
-			if(find_result_in_que != mSetDocInfoInQuestion->end())
+			for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
 			{
-				auto tf = cal_tf(qry->getTerm(), doc_id, QUESTION);
-				auto df = cal_df(qry->getTerm(), QUESTION);				
-				auto idf = cal_idf(df);
-				auto curdl = cal_dl(doc_id, QUESTION);
+				// calculate question area
+				auto find_result_in_que = mSetDocInfoInQuestion->find(qry->getTerm());
+				if(find_result_in_que != mSetDocInfoInQuestion->end())
+				{
+					auto tf = cal_tf(qry->getTerm(), doc_id, QUESTION);
+					auto df = cal_df(qry->getTerm(), QUESTION);				
+					auto idf = cal_idf(df);
+					auto curdl = cal_dl(doc_id, QUESTION);
 
-				que_prob += calBM25(tf, idf, curdl, avgdl_q);
-			}
+					que_prob += calBM25(tf, idf, curdl, avgdl_q);
+				}
 
-			// calculate answer area
-			auto find_result_in_ans = mSetDocInfoInAnswer->find(qry->getTerm());
-			if(find_result_in_ans != mSetDocInfoInAnswer->end())
-			{
-				auto tf = cal_tf(qry->getTerm(), doc_id, ANSWER);
-				auto df = cal_df(qry->getTerm(), ANSWER);				
-				auto idf = cal_idf(df);
-				auto curdl = cal_dl(doc_id, ANSWER);
+				// calculate answer area
+				auto find_result_in_ans = mSetDocInfoInAnswer->find(qry->getTerm());
+				if(find_result_in_ans != mSetDocInfoInAnswer->end())
+				{
+					auto tf = cal_tf(qry->getTerm(), doc_id, ANSWER);
+					auto df = cal_df(qry->getTerm(), ANSWER);				
+					auto idf = cal_idf(df);
+					auto curdl = cal_dl(doc_id, ANSWER);
 
-				ans_prob += calBM25(tf, idf, curdl, avgdl_a);
+					ans_prob += calBM25(tf, idf, curdl, avgdl_a);
+				}
 			}
 		}
-		*/
 		
 		DocInfo doc(doc_id, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
 		score_result[doc_id] = doc;

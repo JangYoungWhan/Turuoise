@@ -34,6 +34,7 @@ Real NaiveBeysian::applyLaplaceSmoothing(Real real)
 	return log(real+M_E); // It always have a positive real value due to laplace smoothing.
 }
 
+/*
 void NaiveBeysian::beginScoring(std::forward_list<Term<String, Integer>> *query_result)
 {
 	// do nothing.
@@ -43,8 +44,9 @@ void NaiveBeysian::beginScoring(std::list<Integer> *query_result, std::vector<Do
 {
 	// do nothing.
 }
+*/
 
-void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result)
+void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
 {
 	std::cout << "NaiveBeysian::beginScoring" << std::endl;
 

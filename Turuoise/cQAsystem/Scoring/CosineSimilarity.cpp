@@ -1,4 +1,5 @@
 #include "CosineSimilarity.h"
+#include <omp.h>
 
 CosineSimilarity::CosineSimilarity()
 { }
@@ -8,6 +9,7 @@ CosineSimilarity::CosineSimilarity(Integer numOfDoc, SqliteConnector* SqlConnect
 CosineSimilarity::~CosineSimilarity()
 { }
 
+/*
 void CosineSimilarity::beginScoring(std::forward_list<Term<String, Integer>> *query_result)
 {
 
@@ -17,9 +19,9 @@ void CosineSimilarity::beginScoring(std::list<Integer> *query_result, std::vecto
 {
 
 }
+*/
 
-
-void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result)
+void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
 {
 	std::cout << "CosineSimilarity::beginScoring" << std::endl;
 
@@ -39,23 +41,109 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 
 		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
 		{
+			std::vector< String> vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
 			// calculate question area
 			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
 				Term<String, Integer> que_term = mVectorDocInfoInQuestion[ n];
 				if( qry->getTerm().compare( que_term.getTerm()) == 0)
 					que_prob += qry->getTermFreq() * que_term.getTermFreq();
+				else {
+					std::vector< Term<String, Integer>> vec_qry;
+					int synonym_num;
+					double synonym_score = synonym;
+
+					if( synonym > EPSILON) {
+						for( int n2 = 0 ; n2 < vec_synonym.size() ; n2++)
+							vec_qry.push_back( Term<String, Integer>( vec_synonym[ n2], qry->getTermFreq()));
+						synonym_num = vec_synonym.size();
+						synonym_score = synonym;
+					}
+					else {
+						vec_qry.push_back( *qry);
+						synonym_num = 1;
+						synonym_score = 1;
+					}
+
+					double max_element_que_prob = 0;
+					for( int n3 = 0 ; n3 < synonym_num ; n3++) {
+						double levenshtein_score;
+						if( vec_qry[ n3].getTerm().compare( que_term.getTerm()) == 0)
+							levenshtein_score = 1;
+						else {
+							if( levenshtein > EPSILON) {
+								std::string str1 = vec_qry[ n3].getTerm();
+								std::string str2 = que_term.getTerm();
+								levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+								levenshtein_score *= levenshtein;
+							}
+							else
+								levenshtein_score = 0;
+						}
+
+						if( levenshtein_score > 0.5) {
+							double temp_que_prob = qry->getTermFreq() * que_term.getTermFreq() * levenshtein_score * synonym_score;
+							if( temp_que_prob > max_element_que_prob)
+								max_element_que_prob = temp_que_prob;
+						}
+					}
+					que_prob += max_element_que_prob;
+				}
 			}
 			
+
 			// calculate answer area
 			for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
 				Term<String, Integer> ans_term = mVectorDocInfoInAnswer[ n];
 				if( qry->getTerm().compare( ans_term.getTerm()) == 0)
 					ans_prob += qry->getTermFreq() * ans_term.getTermFreq();
+				else {
+					std::vector< Term<String, Integer>> vec_qry;
+					int synonym_num;
+					double synonym_score = synonym;
+
+					if( synonym > EPSILON) {
+						for( int n2 = 0 ; n2 < vec_synonym.size() ; n2++)
+							vec_qry.push_back( Term<String, Integer>( vec_synonym[ n2], qry->getTermFreq()));
+						synonym_num = vec_synonym.size();
+						synonym_score = synonym;
+					}
+					else {
+						vec_qry.push_back( *qry);
+						synonym_num = 1;
+						synonym_score = 1;
+					}
+
+					double max_element_ans_prob = 0;
+					for( int n3 = 0 ; n3 < synonym_num ; n3++) {
+						double levenshtein_score;
+
+						if( vec_qry[ n3].getTerm().compare( ans_term.getTerm()) == 0)
+							levenshtein_score = 1;
+						else {
+							if( levenshtein > EPSILON) {
+								std::string str1 = vec_qry[ n3].getTerm();
+								std::string str2 = ans_term.getTerm();
+								levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+								levenshtein_score *= levenshtein;
+							}
+							else 
+								levenshtein_score = 0;
+						}
+
+						if( levenshtein_score > 0.5) {
+							double temp_ans_prob = qry->getTermFreq() * ans_term.getTermFreq() * levenshtein_score * synonym_score;
+							if( temp_ans_prob > max_element_ans_prob)
+								max_element_ans_prob = temp_ans_prob;
+						}
+					}
+					ans_prob += max_element_ans_prob;
+				}
 			}
 
 			magA += qry->getTermFreq() * qry->getTermFreq();
-
 		}
+		
+
 
 		for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
 			Term<String, Integer> que_term = mVectorDocInfoInQuestion[ n];
@@ -73,7 +161,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 		que_prob = ( que_denom == 0)? 0 : que_prob / que_denom;
 		ans_prob = ( ans_denom == 0)? 0 : ans_prob / ans_denom;
 
-		DocInfo doc(i, que_prob*QUESTION_RATIO);
+		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob * 0);
 		score_result[i] = doc;
 		
 	}
