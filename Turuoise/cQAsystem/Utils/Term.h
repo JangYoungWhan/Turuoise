@@ -80,4 +80,24 @@ bool Term<T_str, T_int>::operator!=(const Term<T_str, T_int> &rhs) const
 }
 
 
+class SynonymTerm {
+	private:
+		int wordid;
+		String Term;
+
+	public:
+		SynonymTerm( int _wordid, String _Term) {
+			wordid = _wordid;
+			Term = _Term;
+		}
+
+		int getWordid() {
+			return wordid;
+		}
+
+		String getTerm() {
+			return Term;
+		}
+};
+
 #endif

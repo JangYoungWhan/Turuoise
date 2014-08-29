@@ -144,7 +144,8 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 			// if 동의어 온일때만 가져오는거
 			std::vector< String> vec_synonym;
 			if( synonym > EPSILON) {
-				vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
+				vec_synonym = getSynonymFromMemory( mSqlConnector->getWordID( qry->getTerm()));
+				//vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
 				if( vec_synonym.size() == 0)
 					vec_synonym.push_back( qry->getTerm());
 			}

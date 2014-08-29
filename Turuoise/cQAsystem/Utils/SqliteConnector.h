@@ -70,7 +70,7 @@ public:
 	std::map<String, FreqScore<Integer, Integer>>* getDocInfoMap(Integer doc_id, int flag);
 	std::vector<String> getSynonym( int word_id);
 	std::vector<String> getSynonym( std::string term);
-	std::vector< std::vector< String>> SqliteConnector::getSynonymTable();
+	std::vector< SynonymTerm> SqliteConnector::getSynonymTable();
 	bool createSynonymTable();
 
 	// docid가 존재하지 않으면 -1, 존재하면 TEXTLENGTH반환

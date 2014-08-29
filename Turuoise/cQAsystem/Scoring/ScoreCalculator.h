@@ -11,7 +11,7 @@
 #include "../Utils/ProgressBar.h"
 #include "../Utils/DocInfo.h"
 
-extern std::vector< std::vector< String>> mSynonymTable;
+extern std::vector< SynonymTerm> mSynonymTable;
 
 class ScoreCalculator
 {
@@ -50,6 +50,15 @@ public:
 	//virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
 	//virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
 	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
+	std::vector< String> getSynonymFromMemory( int wordid) {
+		std::vector< String> return_vec;
+		for( int n = 0 ; n < mSynonymTable.size() ; n++) {
+			if( wordid == mSynonymTable[ n].getWordid())
+				return_vec.push_back( mSynonymTable[ n].getTerm());
+		}
+
+		return return_vec;
+	}
 };
 
 
