@@ -11,9 +11,6 @@ private:
 	const Real BM25_k1;
 	const Real BM25_b;
 
-	std::vector<Term<String, Integer>>	mVectorDocInfoInQuestion;
-	std::vector<Term<String, Integer>>	mVectorDocInfoInAnswer;
-
 	std::map<String, FreqScore<Integer, Integer>>	*mSetDocInfoInQuestion;
 	std::map<String, FreqScore<Integer, Integer>>	*mSetDocInfoInAnswer;
 

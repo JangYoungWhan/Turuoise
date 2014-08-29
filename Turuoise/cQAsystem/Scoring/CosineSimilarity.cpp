@@ -41,7 +41,10 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 
 		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
 		{
-			std::vector< String> vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
+			std::vector< String> vec_synonym;
+			if( synonym > EPSILON)
+				vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
+
 			// calculate question area
 			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
 				Term<String, Integer> que_term = mVectorDocInfoInQuestion[ n];
@@ -49,23 +52,20 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 					que_prob += qry->getTermFreq() * que_term.getTermFreq();
 				else {
 					std::vector< Term<String, Integer>> vec_qry;
-					int synonym_num;
 					double synonym_score = synonym;
 
 					if( synonym > EPSILON) {
 						for( int n2 = 0 ; n2 < vec_synonym.size() ; n2++)
 							vec_qry.push_back( Term<String, Integer>( vec_synonym[ n2], qry->getTermFreq()));
-						synonym_num = vec_synonym.size();
 						synonym_score = synonym;
 					}
 					else {
 						vec_qry.push_back( *qry);
-						synonym_num = 1;
 						synonym_score = 1;
 					}
 
 					double max_element_que_prob = 0;
-					for( int n3 = 0 ; n3 < synonym_num ; n3++) {
+					for( int n3 = 0 ; n3 < vec_qry.size() ; n3++) {
 						double levenshtein_score;
 						if( vec_qry[ n3].getTerm().compare( que_term.getTerm()) == 0)
 							levenshtein_score = 1;
@@ -98,23 +98,20 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 					ans_prob += qry->getTermFreq() * ans_term.getTermFreq();
 				else {
 					std::vector< Term<String, Integer>> vec_qry;
-					int synonym_num;
 					double synonym_score = synonym;
 
 					if( synonym > EPSILON) {
 						for( int n2 = 0 ; n2 < vec_synonym.size() ; n2++)
 							vec_qry.push_back( Term<String, Integer>( vec_synonym[ n2], qry->getTermFreq()));
-						synonym_num = vec_synonym.size();
 						synonym_score = synonym;
 					}
 					else {
 						vec_qry.push_back( *qry);
-						synonym_num = 1;
 						synonym_score = 1;
 					}
 
 					double max_element_ans_prob = 0;
-					for( int n3 = 0 ; n3 < synonym_num ; n3++) {
+					for( int n3 = 0 ; n3 < vec_qry.size() ; n3++) {
 						double levenshtein_score;
 
 						if( vec_qry[ n3].getTerm().compare( ans_term.getTerm()) == 0)

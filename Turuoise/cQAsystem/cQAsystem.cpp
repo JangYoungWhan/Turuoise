@@ -131,9 +131,9 @@ void CQAsystem::calculateScore()
 
 	#ifndef _QUERY_LIKELYHOOD_METHOD_
 	//mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
-	mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
-	//mScoreCalculator = new OkapiBM25(0.8, 0.2, numOfDocs, mSqliteConnector);
-	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult);
+	//mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
+	mScoreCalculator = new OkapiBM25(0.8, 0.2, numOfDocs, mSqliteConnector);
+	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, 0, 1);
 	#else
 	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
