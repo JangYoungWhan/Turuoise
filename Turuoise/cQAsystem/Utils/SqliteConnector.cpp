@@ -888,7 +888,7 @@ bool SqliteConnector::createSynonymTable() {
 	result = queryDB( sql.c_str());
 	
 	if( result.size() == 0) {
-		std::cout << "동의어 테이블 생성" << std::endl;
+		std::cout << "유의어 테이블 생성" << std::endl;
 		sql =	"CREATE TABLE SYNONYM( "	\
 				"WORDID		INT		NOT	NULL, "	\
 				"NAME		TEXT	NOT	NULL);";

@@ -42,8 +42,11 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
 		{
 			std::vector< String> vec_synonym;
-			if( synonym > EPSILON)
+			if( synonym > EPSILON) {
 				vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
+				if( vec_synonym.size() == 0)
+					vec_synonym.push_back( qry->getTerm());
+			}
 
 			// calculate question area
 			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
