@@ -881,6 +881,23 @@ std::vector<String> SqliteConnector::getSynonym( std::string term) {
 }
 
 
+std::vector< std::vector< String>> SqliteConnector::getSynonymTable() {
+	String sql;
+	std::vector< std::vector< String>> result, return_vec;
+	sql = "SELECT * FROM SYNONYM";
+		
+	result = queryDB( sql.c_str());
+	
+	for( int n = 0 ; n < result.size() ; n++) {
+		std::vector< String> temp;
+		temp.push_back( result[ n].at( 0));
+		temp.push_back( UTF8ToANSI( result[ n].at( 1).c_str()));
+		return_vec.push_back( temp);
+	}
+
+	return return_vec;
+}
+
 bool SqliteConnector::createSynonymTable() {
 	String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='SYNONYM'";
 	std::vector< std::vector< String>> result;

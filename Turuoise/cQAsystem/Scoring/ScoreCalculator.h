@@ -11,6 +11,7 @@
 #include "../Utils/ProgressBar.h"
 #include "../Utils/DocInfo.h"
 
+extern std::vector< std::vector< String>> mSynonymTable;
 
 class ScoreCalculator
 {

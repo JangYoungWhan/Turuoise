@@ -13,6 +13,10 @@
 #include "Utils/stringutil.h"
 #include "Utils\MorphemeAnalyzer.hpp"
 
+
+std::vector< std::vector< String>> mSynonymTable;
+
+
 //#define _TRAINING_MODE_
 
 struct QueryInput
@@ -154,7 +158,14 @@ int main(int argc, char* argv[])
 	delete mSqliteConnector;
 	*/
 
-	
+
+
+	SqliteConnector *mSqliteConnector = new SqliteConnector( TRAINING_DB_NAME);
+	mSqliteConnector->initDB();
+	std::cout << "=== 유의어 테이블을 메모리로 올림. ===" << std::endl;
+	mSynonymTable = mSqliteConnector->getSynonymTable();	
+
+
 	QAsystem *pQAsystem = new CQAsystem(TRAINING_DB_NAME);
 
 	#ifdef _TRAINING_MODE_
