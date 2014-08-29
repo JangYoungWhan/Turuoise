@@ -46,6 +46,7 @@ void NaiveBeysian::beginScoring(std::list<Integer> *query_result, std::vector<Do
 }
 */
 
+/*
 void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
 {
 	std::cout << "NaiveBeysian::beginScoring" << std::endl;
@@ -74,6 +75,135 @@ void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, s
 			auto find_result_in_ans = mSetDocInfoInAnswer->find(qry->getTerm());
 			if(find_result_in_ans != mSetDocInfoInAnswer->end())
 				ans_prob += applyLaplaceSmoothing(prob_w_d(find_result_in_ans->second.getTermFreq(), sumOfAnsFreq));
+		}
+
+		delete mSetDocInfoInQuestion;
+		delete mSetDocInfoInAnswer;
+
+		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
+		score_result[i] = doc;
+	}
+	std::cout << std::endl;
+}
+*/
+
+
+void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
+{
+	std::cout << "NaiveBeysian::beginScoring" << std::endl;
+
+	score_result.resize(mNumOfDocs);
+	for(auto i=0; i<mNumOfDocs; i++)
+	{
+		mProgressBar->dispalyPrgressBar(i, mNumOfDocs-1);
+
+		mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(i, QUESTION);
+		mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(i, ANSWER);
+		
+		auto sumOfQueFreq = getSumOfDocFreq(mSetDocInfoInQuestion);
+		auto sumOfAnsFreq = getSumOfDocFreq(mSetDocInfoInAnswer);
+		Real que_prob = 0;
+		Real ans_prob = 0;
+		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
+		{
+			std::vector< String> vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
+
+			// calculate question area
+			for( auto que = mSetDocInfoInQuestion->begin() ; que != mSetDocInfoInQuestion->end() ; que++)
+			{
+				if( qry->getTerm().compare( que->first) == 0)
+					que_prob += applyLaplaceSmoothing(prob_w_d( que->second.getTermFreq(), sumOfQueFreq));
+				else {
+					std::vector< Term<String, Integer>> vec_qry;
+					int synonym_num;
+					double synonym_score = synonym;
+
+					if( synonym > EPSILON) {
+						for( int n2 = 0 ; n2 < vec_synonym.size() ; n2++)
+							vec_qry.push_back( Term<String, Integer>( vec_synonym[ n2], qry->getTermFreq()));
+						synonym_num = vec_synonym.size();
+						synonym_score = synonym;
+					}
+					else {
+						vec_qry.push_back( *qry);
+						synonym_num = 1;
+						synonym_score = 1;
+					}
+
+					double max_element_que_prob = 0;
+					for( int n3 = 0 ; n3 < synonym_num ; n3++) {
+						double levenshtein_score;
+						if( vec_qry[ n3].getTerm().compare( que->first) == 0)
+							levenshtein_score = 1;
+						else {
+							if( levenshtein > EPSILON) {
+								std::string str1 = vec_qry[ n3].getTerm();
+								std::string str2 = que->first;
+								levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+								levenshtein_score *= levenshtein;
+							}
+							else
+								levenshtein_score = 0;
+						}
+
+						if( levenshtein_score > 0.5) {
+							double temp_que_prob = applyLaplaceSmoothing(prob_w_d( que->second.getTermFreq(), sumOfQueFreq)) * levenshtein_score * synonym_score;
+							if( temp_que_prob > max_element_que_prob)
+								max_element_que_prob = temp_que_prob;
+						}
+					}
+					que_prob += max_element_que_prob;
+				}
+			}
+
+			// calculate answer area
+			for( auto ans = mSetDocInfoInAnswer->begin() ; ans != mSetDocInfoInAnswer->end() ; ans++)
+			{
+				if( qry->getTerm().compare( ans->first) == 0)
+					ans_prob += applyLaplaceSmoothing(prob_w_d( ans->second.getTermFreq(), sumOfAnsFreq));
+				else {
+					std::vector< Term<String, Integer>> vec_qry;
+					int synonym_num;
+					double synonym_score = synonym;
+
+					if( synonym > EPSILON) {
+						for( int n2 = 0 ; n2 < vec_synonym.size() ; n2++)
+							vec_qry.push_back( Term<String, Integer>( vec_synonym[ n2], qry->getTermFreq()));
+						synonym_num = vec_synonym.size();
+						synonym_score = synonym;
+					}
+					else {
+						vec_qry.push_back( *qry);
+						synonym_num = 1;
+						synonym_score = 1;
+					}
+
+					double max_element_ans_prob = 0;
+					for( int n3 = 0 ; n3 < synonym_num ; n3++) {
+						double levenshtein_score;
+
+						if( vec_qry[ n3].getTerm().compare( ans->first) == 0)
+							levenshtein_score = 1;
+						else {
+							if( levenshtein > EPSILON) {
+								std::string str1 = vec_qry[ n3].getTerm();
+								std::string str2 = ans->first;
+								levenshtein_score = mSqlConnector->get_levenshtein_distance( mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str1.c_str())), mSqlConnector->utf8_to_utf16( mSqlConnector->ANSIToUTF8( str2.c_str())));
+								levenshtein_score *= levenshtein;
+							}
+							else 
+								levenshtein_score = 0;
+						}
+
+						if( levenshtein_score > 0.5) {
+							double temp_ans_prob = ans_prob += applyLaplaceSmoothing(prob_w_d( ans->second.getTermFreq(), sumOfAnsFreq)) * levenshtein_score * synonym_score;
+							if( temp_ans_prob > max_element_ans_prob)
+								max_element_ans_prob = temp_ans_prob;
+						}
+					}
+					ans_prob += max_element_ans_prob;
+				}
+			}
 		}
 
 		delete mSetDocInfoInQuestion;

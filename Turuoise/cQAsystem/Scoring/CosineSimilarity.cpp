@@ -161,7 +161,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 		que_prob = ( que_denom == 0)? 0 : que_prob / que_denom;
 		ans_prob = ( ans_denom == 0)? 0 : ans_prob / ans_denom;
 
-		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob * 0);
+		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob * ANSWER_RATIO);
 		score_result[i] = doc;
 		
 	}
