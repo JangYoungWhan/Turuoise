@@ -47,8 +47,7 @@ public:
 	}
 
 public:
-	//virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
-	//virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
+	virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
 	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
 	std::vector< String> getSynonymFromMemory( int wordid) {
 		std::vector< String> return_vec;
