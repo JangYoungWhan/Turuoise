@@ -58,6 +58,27 @@ public:
 
 		return return_vec;
 	}
+
+	std::vector< String> getSynonymFromMemory( const String& str) {
+		std::vector< String> return_vec;
+
+		int wordid = -1;
+		for( int n = 0 ; n < mSynonymTable.size() ; n++) {
+			if( str.compare( mSynonymTable[ n].getTerm()) == 0) {
+				wordid = mSynonymTable[ n].getWordid();
+				break;
+			}
+		}
+
+		if( wordid != -1) {
+			for( int n = 0 ; n < mSynonymTable.size() ; n++) {
+				if( wordid == mSynonymTable[ n].getWordid())
+					return_vec.push_back( mSynonymTable[ n].getTerm());
+			}
+		}
+
+		return return_vec;
+	}
 };
 
 

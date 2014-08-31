@@ -66,8 +66,10 @@ public:
 	Integer getSumTermFreq();
 	std::forward_list<Term<String, Integer>>* getDocInfoFlist(Integer doc_id, int flag);
 	std::vector<Term<String, Integer>> getDocInfoVector(Integer doc_id, int flag);
+	std::map< Integer, std::vector<Term<String, Integer>>> getALLDocInfoVector( int flag);
 	std::set<Term<String, Integer>>* getDocInfoSet(Integer doc_id, int flag);
 	std::map<String, FreqScore<Integer, Integer>>* getDocInfoMap(Integer doc_id, int flag);
+	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> getALLDocInfoMap( int flag);
 	std::vector<String> getSynonym( int word_id);
 	std::vector<String> getSynonym( std::string term);
 	std::vector< SynonymTerm> SqliteConnector::getSynonymTable();

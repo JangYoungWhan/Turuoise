@@ -1,5 +1,5 @@
 #include "NaiveBeysian.h"
-
+#include <omp.h>
 
 NaiveBeysian::NaiveBeysian()
 { }
@@ -91,31 +91,45 @@ void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, s
 void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
 {
 	std::cout << "NaiveBeysian::beginScoring" << std::endl;
-
 	score_result.resize(mNumOfDocs);
+
+	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapQuestionDoc = mSqlConnector->getALLDocInfoMap( QUESTION);
+	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoMap( ANSWER);
+		
+	omp_set_num_threads( 4);
+	//omp_set_num_threads( 8);
+		
+	int count = 0;
+#pragma omp parallel
+#pragma omp for nowait
 	for(auto i=0; i<mNumOfDocs; i++)
 	{
-		mProgressBar->dispalyPrgressBar(i, mNumOfDocs-1);
+		#pragma omp critical
+		mProgressBar->dispalyPrgressBar(count++, mNumOfDocs-1);
 
-		mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(i, QUESTION);
-		mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(i, ANSWER);
+		std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInQuestion = mapQuestionDoc[ i];
+		std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInAnswer = mapAnswerDoc[ i];
+
+		//mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(i, QUESTION);
+		//mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(i, ANSWER);
 		
-		auto sumOfQueFreq = getSumOfDocFreq(mSetDocInfoInQuestion);
-		auto sumOfAnsFreq = getSumOfDocFreq(mSetDocInfoInAnswer);
+		auto sumOfQueFreq = getSumOfDocFreq( &mSetDocInfoInQuestion);
+		auto sumOfAnsFreq = getSumOfDocFreq( &mSetDocInfoInAnswer);
 		Real que_prob = 0;
 		Real ans_prob = 0;
 		for(auto qry=query_result->begin(); qry!=query_result->end(); qry++)
 		{
 			std::vector< String> vec_synonym;
 			if( synonym > EPSILON) {
-				vec_synonym = getSynonymFromMemory( mSqlConnector->getWordID( qry->getTerm()));
+				vec_synonym = getSynonymFromMemory( qry->getTerm());
+				//vec_synonym = getSynonymFromMemory( mSqlConnector->getWordID( qry->getTerm()));
 				//vec_synonym = mSqlConnector->getSynonym( mSqlConnector->ANSIToUTF8( qry->getTerm().c_str()));
 				if( vec_synonym.size() == 0)
 					vec_synonym.push_back( qry->getTerm());
 			}
 
 			// calculate question area
-			for( auto que = mSetDocInfoInQuestion->begin() ; que != mSetDocInfoInQuestion->end() ; que++)
+			for( auto que = mSetDocInfoInQuestion.begin() ; que != mSetDocInfoInQuestion.end() ; que++)
 			{
 				if( qry->getTerm().compare( que->first) == 0)
 					que_prob += applyLaplaceSmoothing(prob_w_d( que->second.getTermFreq(), sumOfQueFreq));
@@ -160,7 +174,7 @@ void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, s
 			}
 
 			// calculate answer area
-			for( auto ans = mSetDocInfoInAnswer->begin() ; ans != mSetDocInfoInAnswer->end() ; ans++)
+			for( auto ans = mSetDocInfoInAnswer.begin() ; ans != mSetDocInfoInAnswer.end() ; ans++)
 			{
 				if( qry->getTerm().compare( ans->first) == 0)
 					ans_prob += applyLaplaceSmoothing(prob_w_d( ans->second.getTermFreq(), sumOfAnsFreq));
@@ -206,8 +220,8 @@ void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, s
 			}
 		}
 
-		delete mSetDocInfoInQuestion;
-		delete mSetDocInfoInAnswer;
+		//delete mSetDocInfoInQuestion;
+		//delete mSetDocInfoInAnswer;
 
 		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
 		score_result[i] = doc;

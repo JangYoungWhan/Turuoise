@@ -792,6 +792,42 @@ std::vector<Term<String, Integer>> SqliteConnector::getDocInfoVector(Integer doc
 }
 
 
+std::map< Integer, std::vector<Term<String, Integer>>> SqliteConnector::getALLDocInfoVector( int flag){
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	std::map< Integer, std::vector<Term<String, Integer>>> return_map;
+
+	sql = "SELECT DOCID, NAME, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID ORDER BY DOCID ASC";
+	
+	result = queryDB( sql.c_str());
+
+	int ex_docid = -1;
+
+	std::vector<Term<String, Integer>> vec_Term;
+	for( int n0 = 0 ; n0 < result.size() ; n0++) {
+		
+		int doc_id = atoi( result[ n0].at( 0).c_str());
+		if( ex_docid != doc_id) {
+			if( vec_Term.size() > 0)
+				return_map.insert( std::pair< Integer, std::vector<Term<String, Integer>>>( ex_docid, vec_Term));
+			ex_docid = doc_id;
+			vec_Term.clear();
+		}
+		
+		Term< String, Integer> term;
+		term.setTerm( UTF8ToANSI( result[ n0].at( 1).c_str()));
+		term.setTermFreq( atoi( result[ n0].at( 2).c_str()));
+		term.setScore( 0);
+
+		vec_Term.push_back( term);
+	}
+	
+	return return_map;
+}
+
+
 std::set<Term<String, Integer>>* SqliteConnector::getDocInfoSet(Integer doc_id, int flag){
 	
 	String sql;
@@ -840,6 +876,40 @@ std::map<String, FreqScore<Integer, Integer>>* SqliteConnector::getDocInfoMap(In
 	}
 	
 	return map_Term;
+}
+
+
+std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> SqliteConnector::getALLDocInfoMap( int flag){
+	
+	String sql;
+	std::vector< std::vector< String>> result;
+	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> return_map;
+
+	sql = "SELECT DOCID, NAME, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_TF ON WORD_ID.WORDID = QUESTION_TF.WORDID" : "INNER JOIN ANSWER_TF ON WORD_ID.WORDID = ANSWER_TF.WORDID ORDER BY DOCID ASC";
+	
+	result = queryDB( sql.c_str());
+
+	int ex_docid = -1;
+
+	std::map<String, FreqScore<Integer, Integer>> map_Term;
+	for( int n0 = 0 ; n0 < result.size() ; n0++) {
+		
+		int doc_id = atoi( result[ n0].at( 0).c_str());
+		if( ex_docid != doc_id) {
+			if( map_Term.size() > 0)
+				return_map.insert( std::pair< Integer, std::map<String, FreqScore<Integer, Integer>>>( ex_docid, map_Term));
+			ex_docid = doc_id;
+			map_Term.clear();
+		}
+		
+		FreqScore<Integer, Integer> freq_score(atoi( result[ n0].at( 2).c_str()), 0);
+		std::pair<String, FreqScore<Integer, Integer>> term_pair(UTF8ToANSI( result[ n0].at( 1).c_str()), freq_score);
+
+		map_Term.insert( term_pair);
+	}
+	
+	return return_map;
 }
 
 

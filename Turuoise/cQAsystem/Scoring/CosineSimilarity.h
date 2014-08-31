@@ -14,8 +14,6 @@
 class CosineSimilarity : public ScoreCalculator
 {
 private:
-	std::vector<Term<String, Integer>>	mVectorDocInfoInQuestion;
-	std::vector<Term<String, Integer>>	mVectorDocInfoInAnswer;
 
 public:
 	CosineSimilarity();
@@ -25,7 +23,7 @@ public:
 public:
 	//virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result);
 	//virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result);
-	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0);
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym = 0.0, const double levenshtein = 0.0);
 };
 
 

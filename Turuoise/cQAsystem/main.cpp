@@ -179,6 +179,8 @@ int main(int argc, char* argv[])
 	clock_t start_time, end_time;
 	start_time = clock();
 	pQAsystem->analyzeQuery( QUERY);
+	clock_t start_time, end_time;
+	start_time = clock();
 	pQAsystem->calculateScore();
 	end_time = clock();
 	std::cout<< "Machine Learning Time : " << static_cast<Real>(end_time-start_time)/CLOCKS_PER_SEC << std::endl << std::endl;
