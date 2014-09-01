@@ -159,7 +159,7 @@ Real DocLanguageModel::calDomainModel(Integer w0, Integer w1, const std::map<Int
 	return calProWordGivenDoc(p_bi, p_uni, p_coll_uni, p_coll_bi);
 }
 
-void DocLanguageModel::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
+void DocLanguageModel::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	std::cout << "DocLanguageModel::beginScoring" << std::endl;
 
@@ -204,7 +204,7 @@ void DocLanguageModel::beginScoring(std::list<Integer> *query_result, std::vecto
 	std::cout << std::endl;
 }
 
-void DocLanguageModel::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
+void DocLanguageModel::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	// do nothing.
 }

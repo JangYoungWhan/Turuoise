@@ -65,13 +65,26 @@ Real OkapiBM25::cal_avgdl(int flag) const
 }
 
 inline
+Real OkapiBM25::cal_avgdl( std::map< Integer, Integer> map_dl) const
+{
+	Integer sumOfDocLen = 0;
+
+	for(auto iter = map_dl.begin() ; iter != map_dl.end() ; iter++)
+	{
+		sumOfDocLen += iter->second;
+	}
+
+	return static_cast<Real>(sumOfDocLen) / mNumOfDocs;
+}
+
+inline
 Real OkapiBM25::calBM25(Real tf, Real idf, Integer dl, Real avgdl) const
 {
 	return idf*((tf*(BM25_k1+1))/(tf*(1-BM25_b+BM25_b*(dl/avgdl))));
 }
 
 /*
-void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
+void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	std::cout << "OkapiBM25::beginScoring" << std::endl;
 
@@ -123,8 +136,14 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 }
 */
 
+void OkapiBM25::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
+{
 
-void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
+}
+
+
+
+void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	std::cout << "OkapiBM25::beginScoring" << std::endl;
 
@@ -132,22 +151,28 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 
 	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapQuestionDoc = mSqlConnector->getALLDocInfoMap( QUESTION);
 	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoMap( ANSWER);
+
+	std::map< Integer, Integer> mapQuestionDF = mSqlConnector->getALLDF( QUESTION);
+	std::map< Integer, Integer> mapAnswerDF = mSqlConnector->getALLDF( ANSWER);
+
+	std::map< Integer, Integer> mapQuestionDL = mSqlConnector->getALLDocTextLength( QUESTION);
+	std::map< Integer, Integer> mapAnswerDL = mSqlConnector->getALLDocTextLength( ANSWER);
 		
 	omp_set_num_threads( 4);
 	//omp_set_num_threads( 8);
 		
 	int count = 0;
-//#pragma omp parallel
-//#pragma omp for nowait
+#pragma omp parallel
+#pragma omp for nowait
 	for(auto doc_id=0; doc_id<mNumOfDocs; doc_id++)
 	{
-//#pragma omp critical
+#pragma omp critical
 		mProgressBar->dispalyPrgressBar( count++, mNumOfDocs-1);
 
 		Real que_prob = 0.0;
 		Real ans_prob = 0.0;
-		auto avgdl_q = cal_avgdl(QUESTION);
-		auto avgdl_a = cal_avgdl(ANSWER);
+		auto avgdl_q = cal_avgdl( mapQuestionDL);
+		auto avgdl_a = cal_avgdl( mapAnswerDL);
 		
 		std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInQuestion = mapQuestionDoc[ doc_id];
 		std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInAnswer = mapAnswerDoc[ doc_id];
@@ -171,9 +196,9 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 			{
 				if( qry->getTerm().compare( que->first) == 0) {
 					auto tf = qry->getTermFreq();
-					auto df = cal_df(qry->getTerm(), QUESTION);				
+					auto df = mapQuestionDF[ getWORDID_FromMemory( qry->getTerm())];
 					auto idf = cal_idf(df);
-					auto curdl = cal_dl(doc_id, QUESTION);
+					auto curdl = mapQuestionDL[ doc_id];
 
 					que_prob += calBM25(tf, idf, curdl, avgdl_q);
 				}
@@ -209,9 +234,9 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 
 						if( levenshtein_score > 0.5) {
 							auto tf = qry->getTermFreq();
-							auto df = cal_df(qry->getTerm(), QUESTION);				
+							auto df = mapQuestionDF[ getWORDID_FromMemory( qry->getTerm())];
 							auto idf = cal_idf(df);
-							auto curdl = cal_dl(doc_id, QUESTION);
+							auto curdl = mapQuestionDL[ doc_id];
 							
 							double temp_que_prob = calBM25( tf, idf, curdl, avgdl_q) * levenshtein_score * synonym_score;
 							if( temp_que_prob > max_element_que_prob)
@@ -227,9 +252,9 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 			{
 				if( qry->getTerm().compare( ans->first) == 0) {
 					auto tf = qry->getTermFreq();
-					auto df = cal_df(qry->getTerm(), ANSWER);				
+					auto df = mapAnswerDF[ getWORDID_FromMemory( qry->getTerm())];
 					auto idf = cal_idf(df);
-					auto curdl = cal_dl(doc_id, ANSWER);
+					auto curdl = mapAnswerDL[ doc_id];
 
 					ans_prob += calBM25(tf, idf, curdl, avgdl_a);
 				}
@@ -266,9 +291,9 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 
 						if( levenshtein_score > 0.5) {
 							auto tf = qry->getTermFreq();
-							auto df = cal_df(qry->getTerm(), ANSWER);	
+							auto df = mapAnswerDF[ getWORDID_FromMemory( qry->getTerm())];
 							auto idf = cal_idf(df);
-							auto curdl = cal_dl(doc_id, ANSWER);
+							auto curdl = mapAnswerDL[ doc_id];
 
 							double temp_ans_prob = calBM25(tf, idf, curdl, avgdl_a) * levenshtein_score * synonym_score;
 							if( temp_ans_prob > max_element_ans_prob)

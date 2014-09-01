@@ -39,12 +39,13 @@ void NaiveBeysian::beginScoring(std::forward_list<Term<String, Integer>> *query_
 {
 	// do nothing.
 }
+*/
 
-void NaiveBeysian::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result)
+void NaiveBeysian::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	// do nothing.
 }
-*/
+
 
 /*
 void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
@@ -88,7 +89,7 @@ void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, s
 */
 
 
-void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym, double levenshtein)
+void NaiveBeysian::beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	std::cout << "NaiveBeysian::beginScoring" << std::endl;
 	score_result.resize(mNumOfDocs);

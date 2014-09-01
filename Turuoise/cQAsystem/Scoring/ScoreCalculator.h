@@ -12,6 +12,7 @@
 #include "../Utils/DocInfo.h"
 
 extern std::vector< SynonymTerm> mSynonymTable;
+extern std::map< Integer, String> mWordIDTable;
 
 class ScoreCalculator
 {
@@ -47,8 +48,9 @@ public:
 	}
 
 public:
-	virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
-	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0) = 0;
+	virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, const double synonym = 0.0, const double levenshtein = 0.0) = 0;
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym = 0.0, const double levenshtein = 0.0) = 0;
+
 	std::vector< String> getSynonymFromMemory( int wordid) {
 		std::vector< String> return_vec;
 		for( int n = 0 ; n < mSynonymTable.size() ; n++) {
@@ -78,6 +80,15 @@ public:
 		}
 
 		return return_vec;
+	}
+
+	Integer getWORDID_FromMemory( const String& str) {
+	
+		for( auto iter = mWordIDTable.begin() ; iter != mWordIDTable.end() ; iter++) {
+			if( iter->second.compare( str) == 0)
+				return iter->first;
+		}
+		return -1;
 	}
 };
 

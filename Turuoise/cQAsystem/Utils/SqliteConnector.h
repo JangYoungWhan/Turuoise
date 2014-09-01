@@ -61,6 +61,7 @@ public:
 	String getWord( int word_id);
 	Integer getTF(const String &term, Integer doc, int flag);
 	Integer getDF(const String &term, int flag);
+	std::map< Integer, Integer> getALLDF( int flag);
 	Real getIDF(const String &term, int flag);
 	Integer getCountWordID();
 	Integer getSumTermFreq();
@@ -72,11 +73,13 @@ public:
 	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> getALLDocInfoMap( int flag);
 	std::vector<String> getSynonym( int word_id);
 	std::vector<String> getSynonym( std::string term);
-	std::vector< SynonymTerm> SqliteConnector::getSynonymTable();
+	std::vector< SynonymTerm> getSynonymTable();
+	std::map< Integer, String> getWordIDTable();
 	bool createSynonymTable();
 
 	// docid가 존재하지 않으면 -1, 존재하면 TEXTLENGTH반환
 	int getDocTextLength( Integer doc_id, int flag);
+	std::map< Integer, Integer> SqliteConnector::getALLDocTextLength( int flag);
 
 private: // Utils
 	std::vector< std::vector< String>> queryDB(const char* query);

@@ -15,7 +15,7 @@
 
 
 std::vector< SynonymTerm> mSynonymTable;
-
+std::map< Integer, String> mWordIDTable;
 
 //#define _TRAINING_MODE_
 
@@ -162,8 +162,10 @@ int main(int argc, char* argv[])
 	
 	SqliteConnector *mSqliteConnector = new SqliteConnector( TRAINING_DB_NAME);
 	mSqliteConnector->initDB();
-	std::cout << "=== 유의어 테이블을 메모리로 올림. ===" << std::endl;
-	mSynonymTable = mSqliteConnector->getSynonymTable();	
+	//std::cout << "=== 유의어 테이블을 메모리로 올림. ===" << std::endl;
+	mSynonymTable = mSqliteConnector->getSynonymTable();
+	//std::cout << "=== WORDID 테이블을 메모리로 올림. ===" << std::endl;
+	mWordIDTable = mSqliteConnector->getWordIDTable();
 
 	QAsystem *pQAsystem = new CQAsystem(TRAINING_DB_NAME);
 
@@ -176,8 +178,6 @@ int main(int argc, char* argv[])
 	#else
 	pQAsystem->beginTraning(TRAINING_DATA_PATH, true);
 	#endif
-	clock_t start_time, end_time;
-	start_time = clock();
 	pQAsystem->analyzeQuery( QUERY);
 	clock_t start_time, end_time;
 	start_time = clock();

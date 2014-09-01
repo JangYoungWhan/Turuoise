@@ -680,6 +680,23 @@ Integer SqliteConnector::getDF(const String &term, int flag) {
 }
 
 
+std::map< Integer, Integer> SqliteConnector::getALLDF( int flag) {
+	
+	String  sql;
+	sql = "SELECT WORD_ID.WORDID, FREQUENCY FROM WORD_ID ";
+	sql += ( flag == QUESTION)?	"INNER JOIN QUESTION_DF ON WORD_ID.WORDID = QUESTION_DF.WORDID" : "INNER JOIN ANSWER_DF ON WORD_ID.WORDID = ANSWER_DF.WORDID";
+	
+	std::vector< std::vector< String>> result = queryDB(sql.c_str());
+
+	std::map< Integer, Integer> return_map;
+	
+	for( int n = 0 ; n < result.size() ; n++)
+		return_map.insert( std::pair< Integer, Integer>( atoi( result[ n].at( 0).c_str()), atoi( result[ n].at( 1).c_str())));
+
+	return return_map;
+}
+
+
 Real SqliteConnector::getIDF(const String &term, int flag) {
 	
 	String  sql;
@@ -967,6 +984,22 @@ std::vector< SynonymTerm> SqliteConnector::getSynonymTable() {
 	return return_vec;
 }
 
+
+std::map< Integer, String> SqliteConnector::getWordIDTable() {
+	String sql;
+	std::vector< std::vector< String>> result;
+	sql = "SELECT WORDID, NAME FROM WORD_ID ";
+	
+	result = queryDB( sql.c_str());
+
+	std::map< Integer, String> return_map;
+	for( int n = 0 ; n < result.size() ; n++)
+		return_map.insert( std::pair< Integer, String>( atoi( result[ n].at( 0).c_str()), UTF8ToANSI( result[ n].at( 1).c_str())));
+	
+	return return_map;
+}
+
+
 bool SqliteConnector::createSynonymTable() {
 	String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='SYNONYM'";
 	std::vector< std::vector< String>> result;
@@ -1002,6 +1035,23 @@ int SqliteConnector::getDocTextLength( Integer doc_id, int flag) {
 		return -1;
 	else
 		return atoi( result[0].at( 0).c_str());
+}
+
+
+std::map< Integer, Integer> SqliteConnector::getALLDocTextLength( int flag) {
+	String sql;
+	std::vector< std::vector< String>> result;
+
+	sql = "SELECT DOCID, STRLEN FROM ";
+	sql += ( flag == QUESTION)?	"QUESTION_DOC_STRLEN" : "ANSWER_DOC_STRLEN";
+
+	result = queryDB( sql.c_str());
+
+	std::map< Integer, Integer> return_map;
+
+	for( int n = 0 ; n < result.size() ; n++)
+		return_map.insert( std::pair< Integer, Integer>( atoi( result[ n].at( 0).c_str()), atoi( result[ n].at( 1).c_str())));
+	return return_map;
 }
 
 

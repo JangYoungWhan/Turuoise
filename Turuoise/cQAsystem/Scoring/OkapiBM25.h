@@ -23,6 +23,7 @@ private:
 	Real cal_df(String q, int flag) const;
 	Integer cal_dl(Integer d, int flag) const;
 	Real cal_avgdl(int flag) const;
+	Real OkapiBM25::cal_avgdl( std::map< Integer, Integer> map_dl) const;
 	Real calBM25(Real tf, Real idf, Integer dl, Real avgdl) const;
 
 public:
@@ -33,8 +34,8 @@ public:
 
 public:
 	//virtual void beginScoring(std::forward_list<Term<String, Integer>> *query_result);
-	//virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result);
-	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, double synonym = 0.0, double levenshtein = 0.0);
+	virtual void beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, const double synonym = 0.0, const double levenshtein = 0.0);
+	virtual void beginScoring(std::set<Term<String, Integer>> *query_result, std::vector<DocInfo>& score_result, const double synonym = 0.0, const double levenshtein = 0.0);
 };
 
 

@@ -109,7 +109,7 @@ void CQAsystem::analyzeQuery(String& query)
 	mSqliteConnector->openDB();
 
 	std::cout << "Ready to analyzeQuery" << std::endl;
-	#ifndef _QUERY_LIKELYHOOD_METHOD_
+	#ifdef _QUERY_LIKELYHOOD_METHOD_
 	mQueryAnalyzer = new QryAnalCosSim();
 	mQueryAnalyzer->beginQueryAnalysis(query, &mSetQueryResult);
 	#else
@@ -129,11 +129,11 @@ void CQAsystem::calculateScore()
 
 	std::cout << "Ready to calculateScore" << std::endl;
 
-	#ifndef _QUERY_LIKELYHOOD_METHOD_
+	#ifdef _QUERY_LIKELYHOOD_METHOD_
 	//mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
 	//mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
 	mScoreCalculator = new OkapiBM25(0.8, 0.2, numOfDocs, mSqliteConnector);
-	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, 0, 0);
+	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, 0.7, 1);
 	#else
 	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
