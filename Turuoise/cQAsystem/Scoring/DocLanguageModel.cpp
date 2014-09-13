@@ -125,17 +125,17 @@ Real DocLanguageModel::smoothJelinekMercer(const Real p_bigram, const Real p_uni
 inline
 Real DocLanguageModel::calProWordGivenDoc(const Real p_bigram, const Real p_unigram, const Real p_total_bigram, const Real p_total_unigram) const
 {
-	auto p_smoothed = smoothJelinekMercer(p_bigram, p_unigram);
-	auto df_penalty = LAMBDA_JELINECK_MERCER*make_qMLE(p_total_bigram, p_total_unigram);
+	auto p_smoothed = smoothJelinekMercer(p_bigram, p_unigram);								// if word w is seen
+	auto df_penalty = LAMBDA_JELINECK_MERCER*make_qMLE(p_total_bigram, p_total_unigram);	// otherwise
 	
-	return log((p_smoothed/df_penalty)+M_E);
+	return log((p_smoothed/df_penalty) + 1.0);
 }
 
 Real DocLanguageModel::calDomainModel(Integer w0, Integer w1, const std::map<Integer, Integer> &unigram_table, const std::map<std::pair<Integer, Integer>, Integer> &bigram_table) const
 {
 	Integer uni_freq = 0;
 	Integer bi_freq = 0;
-	auto find_result_uni = unigram_table.find(w0);
+	auto find_result_uni = unigram_table.find(w1);
 	auto find_result_bi = bigram_table.find(std::make_pair(w0, w1));
 	if(find_result_uni != unigram_table.end())
 		uni_freq = find_result_uni->second;
@@ -144,7 +144,7 @@ Real DocLanguageModel::calDomainModel(Integer w0, Integer w1, const std::map<Int
 
 	Integer coll_uni_freq = 0;
 	Integer coll_bi_freq = 0;
-	auto find_result_coll_uni = mUnigramCollection.find(w0);
+	auto find_result_coll_uni = mUnigramCollection.find(w1);
 	auto find_result_coll_bi = mBigramCollection.find(std::make_pair(w0, w1));
 	if(find_result_coll_uni != mUnigramCollection.end())
 		coll_uni_freq = find_result_coll_uni->second;
@@ -159,10 +159,22 @@ Real DocLanguageModel::calDomainModel(Integer w0, Integer w1, const std::map<Int
 	return calProWordGivenDoc(p_bi, p_uni, p_coll_uni, p_coll_bi);
 }
 
+inline
+bool DocLanguageModel::isExistWordInTheMap(Integer word, const std::map<Integer, Integer> &unigram_table) const
+{
+	auto find_result = unigram_table.find(word);
+	if(find_result != unigram_table.end())
+		return true;
+	else
+		return false;
+}
+
 void DocLanguageModel::beginScoring(std::list<Integer> *query_result, std::vector<DocInfo>& score_result, const double synonym, const double levenshtein)
 {
 	std::cout << "DocLanguageModel::beginScoring" << std::endl;
 
+	query_result->push_front(mSqlConnector->getNgramWordID(SENTENCE_TAG));
+	query_result->push_back(mSqlConnector->getNgramWordID(SENTENCE_TAG));
 	score_result.resize(mNumOfDocs);
 	for(auto i=0; i<mNumOfDocs; i++)
 	{
@@ -180,8 +192,8 @@ void DocLanguageModel::beginScoring(std::list<Integer> *query_result, std::vecto
 		mSqlConnector->getBigramTable(bigram_table_a, i, ANSWER);
 
 		// initialize document domain probability.
-		Real que_prob = 0;
-		Real ans_prob = 0;
+		Real que_prob = 0.0;
+		Real ans_prob = 0.0;
 
 		// try to make a query using by document language model.
 		auto q1 = query_result->begin();
@@ -189,14 +201,16 @@ void DocLanguageModel::beginScoring(std::list<Integer> *query_result, std::vecto
 		while(q1 != query_result->end())
 		{
 			// calculate question area
-			que_prob += calDomainModel(*q0, *q1, unigram_table_q, bigram_table_q);
+			if(isExistWordInTheMap(*q1, unigram_table_q))
+				que_prob += calDomainModel(*q0, *q1, unigram_table_q, bigram_table_q);
 
 			// calculate answer area
-			ans_prob += calDomainModel(*q0, *q1, unigram_table_a, bigram_table_a);
+			if(isExistWordInTheMap(*q1, unigram_table_a))
+				ans_prob += calDomainModel(*q0, *q1, unigram_table_a, bigram_table_a);
 
 			q0 = q1++;
 		}
-		
+
 		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
 		score_result[i] = doc;
 	}

@@ -27,7 +27,7 @@
 #endif
 
 //#define _NGRAM_TRAINING_
-#define _QUERY_LIKELYHOOD_METHOD_
+//#define _QUERY_LIKELYHOOD_METHOD_
 
 class CQAsystem : public QAsystem
 {
@@ -64,6 +64,7 @@ public:
 	virtual void calculateScore();
 	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit);
 	virtual void dispalyResult(const Integer show_limit);
+	virtual void writeResult(const String &query, const Integer show_limit);
 };
 
 

@@ -344,6 +344,7 @@ void SqliteConnector::getUnigramTable(std::map<Integer, Integer> &unigramTable, 
 		Integer freq = atoi(result[i].at(1).c_str());
 		unigramTable.insert(std::make_pair(word_id, freq));
 	}
+	unigramTable.insert(std::make_pair(getNgramWordID(SENTENCE_TAG), 2)); // insert a pair that has word id of <s> and 2 frequencies.
 }
 
 void SqliteConnector::getBigramTable(std::map<std::pair<Integer, Integer>, Integer> &bigramTable, Integer docID, int flag)

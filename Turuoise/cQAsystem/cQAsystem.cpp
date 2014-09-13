@@ -109,7 +109,7 @@ void CQAsystem::analyzeQuery(String& query)
 	mSqliteConnector->openDB();
 
 	std::cout << "Ready to analyzeQuery" << std::endl;
-	#ifdef _QUERY_LIKELYHOOD_METHOD_
+	#ifndef _QUERY_LIKELYHOOD_METHOD_
 	mQueryAnalyzer = new QryAnalCosSim();
 	mQueryAnalyzer->beginQueryAnalysis(query, &mSetQueryResult);
 	#else
@@ -129,7 +129,7 @@ void CQAsystem::calculateScore()
 
 	std::cout << "Ready to calculateScore" << std::endl;
 
-	#ifdef _QUERY_LIKELYHOOD_METHOD_
+	#ifndef _QUERY_LIKELYHOOD_METHOD_
 	//mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
 	//mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
 	mScoreCalculator = new OkapiBM25(0.8, 0.2, numOfDocs, mSqliteConnector);
@@ -186,7 +186,7 @@ void CQAsystem::dispalyResult(const Integer show_limit)
 		rapidxml::xml_node<char> *question_node = data_node->first_node("question");;
 		rapidxml::xml_node<char> *answer_node = data_node->first_node("answer");
 
-		std::cout << "=== Rank " << i+1 << " (Score:" << mScoreResult[i] << ") ===" << std::endl;
+		std::cout << "=== Rank " << i+1 << " (DocID/Score:" << mScoreResult[i] << ") ===" << std::endl;
 
 		std::cout << "== Question ==" << std::endl;
 		std::cout << mSqliteConnector->UTF8ToANSI(question_node->value()) << std::endl;
@@ -195,4 +195,41 @@ void CQAsystem::dispalyResult(const Integer show_limit)
 		std::cout << "---------------------------------------------------------------" << std::endl;
 	}
 	std::cout << "=== Done ===" << std::endl << std::endl;
+}
+
+void CQAsystem::writeResult(const String &query, const Integer show_limit)
+{
+	std::cout << "Ready to writeResult" << std::endl;
+	std::partial_sort(mScoreResult.begin(), mScoreResult.begin()+show_limit, mScoreResult.end());
+
+	std::ofstream outFile;
+	outFile.open("result.txt", std::ios::app);
+	if(outFile.fail())
+		std::cerr << "Cannot make a file : result.txt" << std::endl;
+
+	outFile << "== Query ==";
+	outFile << query << std::endl;
+
+	for(auto i=0; i<show_limit; i++)
+	{
+		auto file_name = getXmlPathFromDocID(mScoreResult[i].getDocID());
+		rapidxml::file<> xml_file(file_name.c_str());
+		rapidxml::xml_document<> xml_doc;
+
+		xml_doc.parse<0>(xml_file.data());
+
+		rapidxml::xml_node<char> *data_node = xml_doc.first_node("data");
+
+		rapidxml::xml_node<char> *question_node = data_node->first_node("question");;
+		rapidxml::xml_node<char> *answer_node = data_node->first_node("answer");
+
+		outFile << "=== Rank " << i+1 << " (DocID/Score:" << mScoreResult[i] << ") ===" << std::endl;
+
+		outFile << "== Question ==" << std::endl;
+		outFile << mSqliteConnector->UTF8ToANSI(question_node->value()) << std::endl;
+		outFile << "== Answer ==" << std::endl;
+		outFile << mSqliteConnector->UTF8ToANSI(answer_node->value()) << std::endl;
+		outFile << "---------------------------------------------------------------" << std::endl;
+	}
+	outFile << "=== Done ===" << std::endl << std::endl;
 }

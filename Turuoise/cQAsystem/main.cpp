@@ -178,15 +178,17 @@ int main(int argc, char* argv[])
 	#else
 	pQAsystem->beginTraning(TRAINING_DATA_PATH, true);
 	#endif
-	pQAsystem->analyzeQuery( QUERY);
+
+/*	pQAsystem->analyzeQuery( QUERY);
 	clock_t start_time, end_time;
 	start_time = clock();
 	pQAsystem->calculateScore();
 	end_time = clock();
 	std::cout<< "Machine Learning Time : " << static_cast<Real>(end_time-start_time)/CLOCKS_PER_SEC << std::endl << std::endl;
 	pQAsystem->dispalyResult(DISPLAY_LIMIT);
+*/
 
-/*	auto *qry_info = readQueryXml("query.xml");
+	auto *qry_info = readQueryXml("query.xml");
 	for(auto iter = qry_info->begin(); iter!=qry_info->end(); iter++)
 	{
 		pQAsystem->analyzeQuery(iter->query);
@@ -195,9 +197,11 @@ int main(int argc, char* argv[])
 		//pQAsystem->dispalyResult(DISPLAY_LIMIT);
 		writeResultXml(iter->qum, result);
 		delete result;
+		//pQAsystem->dispalyResult(DISPLAY_LIMIT);
+		pQAsystem->writeResult(iter->query, DISPLAY_LIMIT);
 	}
 	delete qry_info;
-*/
+
 	delete pQAsystem;
 	
 	return 0;

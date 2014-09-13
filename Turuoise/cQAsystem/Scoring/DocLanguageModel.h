@@ -26,6 +26,7 @@ private:
 	Real smoothJelinekMercer(const Real p_bigram, const Real p_unigram) const;
 	Real calProWordGivenDoc(const Real p_bigram, const Real p_unigram, const Real p_total_bigram, const Real p_total_unigram) const;
 	Real calDomainModel(Integer w1, Integer w2, const std::map<Integer, Integer> &unigram_table, const std::map<std::pair<Integer, Integer>, Integer> &bigram_table) const;
+	bool isExistWordInTheMap(Integer word, const std::map<Integer, Integer> &unigram_table) const;
 
 	// related to collection
 	Integer count_unigram(Integer word_id) const;
