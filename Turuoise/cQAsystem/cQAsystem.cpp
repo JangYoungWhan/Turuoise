@@ -120,6 +120,7 @@ void CQAsystem::analyzeQuery(String& query)
 
 	delete mSqliteConnector;
 }
+
 void CQAsystem::calculateScore()
 {
 	mSqliteConnector = new SqliteConnector(mDbName);
@@ -145,6 +146,35 @@ void CQAsystem::calculateScore()
 	delete mScoreCalculator;
 	delete mSqliteConnector;
 }
+
+enum { FUNC_COSINE = 0, FUNC_BM25};
+void CQAsystem::calculateScore( const int scoring_func, const double question_weight, const double answer_weight, const double libenstein_weight, const double synonym_weight)
+{
+	mSqliteConnector = new SqliteConnector(mDbName);
+	mSqliteConnector->openDB();
+
+	auto numOfDocs = mDocId2DocPath.size();
+
+	std::cout << "Ready to calculateScore" << std::endl;
+
+	if( scoring_func == FUNC_COSINE)
+		mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
+	else if( scoring_func == FUNC_BM25)
+		mScoreCalculator = new OkapiBM25( question_weight, 0, numOfDocs, mSqliteConnector);
+	
+	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, synonym_weight, libenstein_weight);
+	
+	/*  어케 합치냐.
+	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
+	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
+	*/
+	std::cout << "Scoring complete" << std::endl << std::endl;
+
+	delete mQueryAnalyzer;
+	delete mScoreCalculator;
+	delete mSqliteConnector;
+}
+
 
 const String& CQAsystem::getXmlPathFromDocID(Integer doc_id) const
 {

@@ -30,7 +30,13 @@ std::wstring utf8_to_utf16(const std::string& utf8);
 
 
 // main 
-int main( void) {
+int main( int argc, char* argv[]) {
+
+	std::string output_file_name;
+	if( argc != 2)
+		output_file_name = "synonym.txt";
+	else 
+		output_file_name = argv[ 1];
 
 	QueryPerformanceFrequency( &TFrequency);
 	QueryPerformanceCounter( &Tbegin);      
@@ -76,7 +82,7 @@ int main( void) {
 	life_print_progress_thread = false;
 	print_progress_thread.join();
 
-	std::ofstream fout( "synonym.txt");
+	std::ofstream fout( output_file_name.c_str());
 	for( int n1 = 0 ; n1 < THREAD_NUM ; n1++) {
 		for( int n2 = 0 ; n2 < vec_vec_synonym[ n1].size() ; n2++) {
 			std::vector< std::string>& vec = vec_vec_synonym[ n1].at( n2);
@@ -90,7 +96,7 @@ int main( void) {
 
 	
     QueryPerformanceCounter( &Tend);  
-	std::cout << "\n>>synonym.txt 출력 완료" << std::endl;
+	std::cout << "\n>> " << output_file_name << " 출력 완료" << std::endl;
 	std::cout << ">>수행시간 : [" << ( Tend.QuadPart - Tbegin.QuadPart) / (double)TFrequency.QuadPart << "]s " << std::endl;
 
 	return 0;

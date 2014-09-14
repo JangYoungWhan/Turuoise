@@ -1,0 +1,34 @@
+####옵션 설정 파일.
+
+#트레이닝을 다시 하려면 값을 1으로
+RE_TRAINING 1
+
+#xml파일들이 들어있는 폴더의 경로
+TRAINING_XML_FOLDER_PATH ../../../../training_data/
+
+#인터넷에서 다시 동의어를 추출하려면 값을 1으로. 색인어가 많이지면 느릴 수 있음.
+GET_SYNONYM_DATA 1
+
+#인터넷에서 추출한 동의어를 저장할 파일이름.
+SYNONYM_DATA_FILE_NAME synonym.txt
+
+#db 이름.
+DB_NAME Turuoise.db
+
+#사용할 스코어링 함수. 코사인 유사도 = 0, BM25 = 1
+SCORING_FUNC 0
+
+#쿼리 분석에서 질문의 가중치
+QUESTION_WEIGHT 0.8
+
+#쿼리 분석에서 답변의 가중치
+ANSWER_WEIGHT 0.2
+
+#쿼리 분석에서 리벤슈타인 가중치. 사용하지 않으려면 0
+LIEBENSTEIN_WEIGHT 1
+
+#쿼리 분석에서 동의어 가중치. 사용하지 않으려면 0
+SYNONYM_WEIGHT 0.7
+
+#출력 xml에서 포함할 답 갯수
+DISPLAY_LIMIT 10
