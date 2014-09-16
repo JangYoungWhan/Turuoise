@@ -1304,6 +1304,7 @@ void SqliteConnector::getLSAtestfileTF() {
 		}
 		fout << result[ n].at( 1) << " " << result[ n].at( 2) << std::endl;
 	}
+	fout.close();
 }
 
 void SqliteConnector::getLSAtestfileTF_MUL_IDF() {
@@ -1344,4 +1345,5 @@ void SqliteConnector::getLSAtestfileTF_MUL_IDF() {
 		}
 		fout << result[ n].at( 1) << " " << result[ n].at( 2) << std::endl;
 	}
+	fout.close();
 }
