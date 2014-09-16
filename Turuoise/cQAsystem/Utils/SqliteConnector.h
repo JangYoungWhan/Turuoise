@@ -81,6 +81,10 @@ public:
 	int getDocTextLength( Integer doc_id, int flag);
 	std::map< Integer, Integer> SqliteConnector::getALLDocTextLength( int flag);
 
+
+	void getLSAtestfileTF();
+	void getLSAtestfileTF_MUL_IDF();
+
 private: // Utils
 	std::vector< std::vector< String>> queryDB(const char* query);
 	bool hasEnding(String const &fullString, String const &ending);

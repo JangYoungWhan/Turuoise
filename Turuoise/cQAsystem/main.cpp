@@ -180,6 +180,15 @@ bool readOptionFile( Optstruct& option);
 // main -----------------------------------------------------------------------------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
+#ifndef LSA
+	String db_name = "Turuoise.db";
+	SqliteConnector *mSqliteConnector = new SqliteConnector( db_name);
+	mSqliteConnector->initDB();
+	
+	mSqliteConnector->getLSAtestfileTF();		// TF
+	mSqliteConnector->getLSAtestfileTF_MUL_IDF();	// TF °öÇÏ±â IDF
+	delete mSqliteConnector;
+#else
 	std::cout << "=== Run Turuoise ===" << std::endl;
 	Optstruct option;
 	
@@ -269,7 +278,7 @@ int main(int argc, char* argv[])
 	delete qry_info;
 
 	delete pQAsystem;
-	
+#endif	
 	return 0;
 }
 // main -----------------------------------------------------------------------------------------------------------------------------------------------

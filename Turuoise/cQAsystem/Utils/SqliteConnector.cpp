@@ -1269,3 +1269,79 @@ bool SqliteConnector::initExistsDB() const
 	else
 		return false;
 }
+
+
+#include <direct.h>
+#include <fstream>
+void SqliteConnector::getLSAtestfileTF() {
+	String sql;
+	std::vector< std::vector< String>> result;
+
+	sql = "SELECT DOCID, WORDID, SUM( FREQUENCY) FROM ( "	\
+			"SELECT DOCID, WORDID, FREQUENCY FROM QUESTION_TF "	\
+			"UNION ALL "	\
+			"SELECT DOCID, WORDID, FREQUENCY FROM ANSWER_TF "	\
+			") AS a GROUP BY DOCID, WORDID";
+	result = queryDB( sql.c_str());
+	
+	_mkdir( "LSA");
+	_mkdir( "LSA/TF");
+	std::ofstream fout;
+	if( result.size() == 0)
+		return;
+	else {
+		String fname = "LSA/TF/doc" + std::to_string( atoi( result[ 0].at( 0).c_str())) + ".txt";
+		fout.open( fname);
+	}
+
+	int ex_doc_id = -1;
+	for( int n = 0 ; n < result.size() ; n++) {
+		if( ex_doc_id != atoi( result[ n].at( 0).c_str())) {
+			ex_doc_id = atoi( result[ n].at( 0).c_str());
+			fout.close();
+			String fname = "LSA/TF/doc" + std::to_string( ex_doc_id) + ".txt";
+			fout.open( fname);
+		}
+		fout << result[ n].at( 1) << " " << result[ n].at( 2) << std::endl;
+	}
+}
+
+void SqliteConnector::getLSAtestfileTF_MUL_IDF() {
+	String sql;
+	std::vector< std::vector< String>> result;
+
+	sql = "SELECT DOCID, T1.WORDID, TF * 1.0 / DF FROM ( "	\
+			"SELECT DOCID, WORDID, SUM( FREQUENCY) AS TF FROM ( "	\
+			"SELECT DOCID, WORDID, FREQUENCY FROM QUESTION_TF "	\
+			"UNION ALL "	\
+			"SELECT DOCID, WORDID, FREQUENCY FROM ANSWER_TF "	\
+			") AS a GROUP BY DOCID, WORDID ) AS T1 "	\
+			"INNER JOIN ( "	\
+			"SELECT WORDID, SUM( FREQUENCY) AS DF FROM ( "	\
+			"SELECT WORDID, FREQUENCY FROM QUESTION_DF "	\
+			"UNION ALL "	\
+			"SELECT WORDID, FREQUENCY FROM	ANSWER_DF "	\
+			") AS A GROUP BY WORDID ) AS T2 ON T1.WORDID = T2.WORDID ";
+	result = queryDB( sql.c_str());
+	
+	_mkdir( "LSA");
+	_mkdir( "LSA/TF_MUL_IDF");
+	std::ofstream fout;
+	if( result.size() == 0)
+		return;
+	else {
+		String fname = "LSA/TF_MUL_IDF/doc" + std::to_string( atoi( result[ 0].at( 0).c_str())) + ".txt";
+		fout.open( fname);
+	}
+
+	int ex_doc_id = -1;
+	for( int n = 0 ; n < result.size() ; n++) {
+		if( ex_doc_id != atoi( result[ n].at( 0).c_str())) {
+			ex_doc_id = atoi( result[ n].at( 0).c_str());
+			fout.close();
+			String fname = "LSA/TF_MUL_IDF/doc" + std::to_string( ex_doc_id) + ".txt";
+			fout.open( fname);
+		}
+		fout << result[ n].at( 1) << " " << result[ n].at( 2) << std::endl;
+	}
+}
