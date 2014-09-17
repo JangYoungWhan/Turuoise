@@ -19,6 +19,10 @@ Real DocInfo::getScore() const
 	return this->mScore;
 }
 
+void DocInfo::putScore( Real score) {
+	this->mScore = score;
+}
+
 bool DocInfo::operator<(const DocInfo &rhs) const
 {
 	if(this->mScore - rhs.getScore() < EPSILON)

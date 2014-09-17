@@ -19,6 +19,7 @@ public:
 
 	Integer getDocID() const;
 	Real getScore() const;
+	void putScore( Real score);
 
 	bool operator<(const DocInfo &rhs) const;
 	bool operator>(const DocInfo &rhs) const;

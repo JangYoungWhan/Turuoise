@@ -88,7 +88,7 @@ class Optstruct {
 			std::cout << "-- 수행 옵션 --" << std::endl;
 			std::cout << "RE_TRAINING " << re_training << std::endl;
 			std::cout << "TRAINING_XML_FOLDER_PATH " << training_xml_folder_path << std::endl;
-			std::cout << "GET_SYNONYM_DATA 0 " << get_synonym_data << std::endl;
+			std::cout << "GET_SYNONYM_DATA " << get_synonym_data << std::endl;
 			std::cout << "SYNONYM_DATA_FILE_NAME " << synonym_data_file_name << std::endl;
 			std::cout << "DB_NAME " << db_name << std::endl;
 			std::cout << "SCORING_FUNC " << scoring_func << std::endl;
@@ -180,7 +180,7 @@ bool readOptionFile( Optstruct& option);
 // main -----------------------------------------------------------------------------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-#ifndef LSA
+#ifdef LSA
 	String db_name = "Turuoise.db";
 	SqliteConnector *mSqliteConnector = new SqliteConnector( db_name);
 	mSqliteConnector->initDB();
@@ -230,7 +230,8 @@ int main(int argc, char* argv[])
 			fout << mSqliteConnector->getWord( i) << std::endl;
 		fout.close();
 
-		system("getSynonym.exe");
+		String synonym_command = "getSynonym.exe " + option.synonym_data_file_name;
+		system( synonym_command.c_str());
 
 		std::cout << "=== db의 유의어 테이블을 업데이트하는 부분임 ===" << std::endl;
 		std::ifstream fin( option.synonym_data_file_name);

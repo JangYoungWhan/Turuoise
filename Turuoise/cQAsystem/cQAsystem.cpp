@@ -109,18 +109,24 @@ void CQAsystem::analyzeQuery(String& query)
 	mSqliteConnector->openDB();
 
 	std::cout << "Ready to analyzeQuery" << std::endl;
-	#ifndef _QUERY_LIKELYHOOD_METHOD_
+	
 	mQueryAnalyzer = new QryAnalCosSim();
 	mQueryAnalyzer->beginQueryAnalysis(query, &mSetQueryResult);
-	#else
+
+	delete mQueryAnalyzer;
+
 	mQueryAnalyzer = new QryNgram(mSqliteConnector);
 	mQueryAnalyzer->beginQueryAnalysis(query, &mLstQueryResult);
-	#endif
+
 	std::cout << "Query analysis complete" << std::endl << std::endl;
+
+	delete mQueryAnalyzer;
 
 	delete mSqliteConnector;
 }
 
+
+// obsolete
 void CQAsystem::calculateScore()
 {
 	mSqliteConnector = new SqliteConnector(mDbName);
@@ -147,6 +153,7 @@ void CQAsystem::calculateScore()
 	delete mSqliteConnector;
 }
 
+
 enum { FUNC_COSINE = 0, FUNC_BM25};
 void CQAsystem::calculateScore( const int scoring_func, const double question_weight, const double answer_weight, const double libenstein_weight, const double synonym_weight)
 {
@@ -163,14 +170,34 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 		mScoreCalculator = new OkapiBM25( question_weight, 0, numOfDocs, mSqliteConnector);
 	
 	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, synonym_weight, libenstein_weight);
+	std::vector<DocInfo> vec_QuestionScoreResult = mScoreResult;
+	mScoreResult.clear();
+	delete mScoreCalculator;
 	
-	/*  어케 합치냐.
 	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
-	*/
-	std::cout << "Scoring complete" << std::endl << std::endl;
+	std::vector<DocInfo> vec_AnswerScoreResult = mScoreResult;
+	mScoreResult.clear();
 
-	delete mQueryAnalyzer;
+	Real sum_QuestionScore = 0, sum_AnswerScore = 0;
+
+	for( int n = 0 ; n < numOfDocs ; n++) {
+		sum_QuestionScore += vec_QuestionScoreResult[ n].getScore();
+		sum_AnswerScore += vec_AnswerScoreResult[ n].getScore();
+	}
+
+	for( int n = 0 ; n < numOfDocs ; n++) {
+		vec_QuestionScoreResult[ n].putScore( vec_QuestionScoreResult[ n].getScore() / sum_QuestionScore );
+		vec_AnswerScoreResult[ n].putScore( vec_AnswerScoreResult[ n].getScore() / sum_AnswerScore);
+	}
+
+	mScoreResult.resize( numOfDocs);
+	for( int n = 0 ; n < numOfDocs ; n++) {
+		DocInfo doc( n, vec_QuestionScoreResult[ n].getScore() * question_weight + vec_AnswerScoreResult[ n].getScore() * answer_weight);
+		mScoreResult[n] = doc;
+	}
+
+	std::cout << "Scoring complete" << std::endl << std::endl;
 	delete mScoreCalculator;
 	delete mSqliteConnector;
 }

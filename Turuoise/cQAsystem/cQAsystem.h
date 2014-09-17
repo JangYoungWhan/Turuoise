@@ -26,8 +26,8 @@
 #include <dirent.h>
 #endif
 
-//#define _NGRAM_TRAINING_
-//#define _QUERY_LIKELYHOOD_METHOD_
+#define _NGRAM_TRAINING_
+#define _QUERY_LIKELYHOOD_METHOD_
 
 class CQAsystem : public QAsystem
 {
