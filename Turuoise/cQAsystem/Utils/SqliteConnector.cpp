@@ -1126,7 +1126,7 @@ std::string SqliteConnector::ANSIToUTF8( const char * pszCode)
 	nLength2 = WideCharToMultiByte( CP_UTF8, 0, bstrCode, -1, pszUTFCode, 0, NULL, NULL); 
 	pszUTFCode = (char*)malloc( nLength2+1); 
 	WideCharToMultiByte( CP_UTF8, 0, bstrCode, -1, pszUTFCode, nLength2, NULL, NULL); 
-
+	SysFreeString( bstrCode);
 	std::string return_str = pszUTFCode;
 	free( pszUTFCode);
 	return return_str;
@@ -1202,6 +1202,7 @@ std::wstring SqliteConnector::utf8_to_utf16(const std::string& utf8)
             utf16 += (wchar_t)((uni & 0x3FF) + 0xDC00);
         }
     }
+	unicode.clear();
     return utf16;
 }
 
@@ -1211,9 +1212,12 @@ double SqliteConnector::get_levenshtein_distance( const std::wstring& wcs1, cons
     unsigned int len1 = wcslen(wcs1.c_str());
     unsigned int len2 = wcslen(wcs2.c_str());
 	
-    int** d = new int*[ len1 + 1];
-	for( int n = 0 ; n < len1 + 1 ; n++)
+	int** d = NULL;
+	d = new int*[ len1 + 1];
+	
+	for( int n = 0 ; n < len1 + 1 ; n++) {
 		d[ n] = new int[ len2 + 1];
+	}
  
     for ( unsigned int i = 0; i <= len1; ++i) {
         d[i][0] = i;

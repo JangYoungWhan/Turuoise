@@ -265,16 +265,21 @@ int main(int argc, char* argv[])
 	mWordIDTable = mSqliteConnector->getWordIDTable();
 
 	delete mSqliteConnector;
+	//delete pQAsystem;
 
 	auto *qry_info = readQueryXml("query.xml");
 	for(auto iter = qry_info->begin(); iter!=qry_info->end(); iter++)
 	{
+		//QAsystem *pQAsystem = new CQAsystem( option.db_name);
+
 		pQAsystem->analyzeQuery(iter->query);
 		pQAsystem->calculateScore( option.scoring_func, option.question_weight, option.answer_weight, option.liebenstein_weight, option.synonym_weight);
 		auto *result = pQAsystem->sortResult( option.display_limit);
 		writeResultXml(iter->qum, result);
 		delete result;
 		pQAsystem->writeResult(iter->query, option.display_limit);
+
+		//delete pQAsystem;
 	}
 	delete qry_info;
 

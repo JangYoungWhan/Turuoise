@@ -119,7 +119,7 @@ void CQAsystem::analyzeQuery(String& query)
 	mQueryAnalyzer->beginQueryAnalysis(query, &mLstQueryResult);
 
 	std::cout << "Query analysis complete" << std::endl << std::endl;
-
+	
 	delete mQueryAnalyzer;
 
 	delete mSqliteConnector;
@@ -163,7 +163,7 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 	auto numOfDocs = mDocId2DocPath.size();
 
 	std::cout << "Ready to calculateScore" << std::endl;
-
+	
 	if( scoring_func == FUNC_COSINE)
 		mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
 	else if( scoring_func == FUNC_BM25)
@@ -173,7 +173,7 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 	std::vector<DocInfo> vec_QuestionScoreResult = mScoreResult;
 	mScoreResult.clear();
 	delete mScoreCalculator;
-	
+
 	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
 	std::vector<DocInfo> vec_AnswerScoreResult = mScoreResult;
@@ -196,7 +196,7 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 		DocInfo doc( n, vec_QuestionScoreResult[ n].getScore() * question_weight + vec_AnswerScoreResult[ n].getScore() * answer_weight);
 		mScoreResult[n] = doc;
 	}
-
+	
 	std::cout << "Scoring complete" << std::endl << std::endl;
 	delete mScoreCalculator;
 	delete mSqliteConnector;

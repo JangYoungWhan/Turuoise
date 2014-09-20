@@ -32,8 +32,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 	std::map< Integer, std::vector<Term<String, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoVector( ANSWER);
 
 	omp_set_num_threads( 4);
-	//omp_set_num_threads( 8);
-
+	
 	int count = 0;
 #pragma omp parallel
 #pragma omp for nowait
@@ -42,8 +41,8 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 		#pragma omp critical
 		mProgressBar->dispalyPrgressBar( count++, mNumOfDocs-1);
 				
-		std::vector<Term<String, Integer>>	mVectorDocInfoInQuestion = mapQuestionDoc[ i];
-		std::vector<Term<String, Integer>>	mVectorDocInfoInAnswer = mapAnswerDoc[ i];
+		std::vector<Term<String, Integer>>&	mVectorDocInfoInQuestion = mapQuestionDoc[ i];
+		std::vector<Term<String, Integer>>&	mVectorDocInfoInAnswer = mapAnswerDoc[ i];
 
 		Real que_prob = 0;
 		Real ans_prob = 0;
@@ -61,10 +60,10 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 				if( vec_synonym.size() == 0)
 					vec_synonym.push_back( qry->getTerm());
 			}
-
+			
 			// calculate question area
 			for( int n = 0 ; n < mVectorDocInfoInQuestion.size() ; n++) {
-				Term<String, Integer> que_term = mVectorDocInfoInQuestion[ n];
+				Term<String, Integer>& que_term = mVectorDocInfoInQuestion[ n];
 				if( qry->getTerm().compare( que_term.getTerm()) == 0)
 					que_prob += qry->getTermFreq() * que_term.getTermFreq();
 				else {
@@ -80,7 +79,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 						vec_qry.push_back( *qry);
 						synonym_score = 1;
 					}
-
+					
 					double max_element_que_prob = 0;
 					for( int n3 = 0 ; n3 < vec_qry.size() ; n3++) {
 						double levenshtein_score;
@@ -106,10 +105,10 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 				}
 			}
 			
-
+			
 			// calculate answer area
 			for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
-				Term<String, Integer> ans_term = mVectorDocInfoInAnswer[ n];
+				Term<String, Integer>& ans_term = mVectorDocInfoInAnswer[ n];
 				if( qry->getTerm().compare( ans_term.getTerm()) == 0)
 					ans_prob += qry->getTermFreq() * ans_term.getTermFreq();
 				else {
@@ -151,7 +150,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 					ans_prob += max_element_ans_prob;
 				}
 			}
-
+			
 			magA += qry->getTermFreq() * qry->getTermFreq();
 		}
 		
@@ -174,7 +173,6 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 
 		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob * ANSWER_RATIO);
 		score_result[i] = doc;
-		
 	}
 	std::cout << std::endl;
 }

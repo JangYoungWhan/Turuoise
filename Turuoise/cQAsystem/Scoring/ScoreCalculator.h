@@ -78,7 +78,6 @@ public:
 					return_vec.push_back( mSynonymTable[ n].getTerm());
 			}
 		}
-
 		return return_vec;
 	}
 
