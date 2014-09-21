@@ -490,7 +490,7 @@ int main(int argc, char* argv[])
 	pQAsystem->calculateScore();
 	end_time = clock();
 	std::cout<< "Machine Learning Time : " << static_cast<Real>(end_time-start_time)/CLOCKS_PER_SEC << std::endl << std::endl;
-	pQAsystem->dispalyResult(DISPLAY_LIMIT);
+	pQAsystem->displayResult(DISPLAY_LIMIT);
 */
 
 	auto *qry_info = readQueryXml("query.xml");
@@ -499,10 +499,10 @@ int main(int argc, char* argv[])
 		pQAsystem->analyzeQuery(iter->query);
 		pQAsystem->calculateScore();
 		auto *result = pQAsystem->sortResult(DISPLAY_LIMIT);
-		//pQAsystem->dispalyResult(DISPLAY_LIMIT);
+		//pQAsystem->displayResult(DISPLAY_LIMIT);
 		writeResultXml(iter->qum, result);
 		delete result;
-		//pQAsystem->dispalyResult(DISPLAY_LIMIT);
+		//pQAsystem->displayResult(DISPLAY_LIMIT);
 		pQAsystem->writeResult(iter->query, DISPLAY_LIMIT);
 	}
 	delete qry_info;

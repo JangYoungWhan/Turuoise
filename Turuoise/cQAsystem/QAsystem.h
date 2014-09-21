@@ -26,7 +26,7 @@ public:
 
 	// Phase 4 : Refine score and print Q-A pairs in descending order.
 	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit) = 0;
-	virtual void dispalyResult(const Integer show_limit) = 0;
+	virtual void displayResult(const Integer show_limit) = 0;
 	virtual void writeResult(const String &query, const Integer show_limit) = 0;
 };
 

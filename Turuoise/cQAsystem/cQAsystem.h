@@ -47,7 +47,6 @@ private:
 	BaseTrainer*		mNgramTrainer;
 	QueryAnalyzer*		mQueryAnalyzer;
 	ScoreCalculator*	mScoreCalculator;
-	void*				mOutputPrinter; // it does not defined yet
 
 private:
 	const String& getXmlPathFromDocID(Integer doc_id) const;
@@ -64,7 +63,7 @@ public:
 	virtual void calculateScore();
 	virtual void calculateScore( const int scoring_func, const double question_weight, const double answer_weight, const double libenstein_weight, const double synonym_weight);
 	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit);
-	virtual void dispalyResult(const Integer show_limit);
+	virtual void displayResult(const Integer show_limit);
 	virtual void writeResult(const String &query, const Integer show_limit);
 };
 

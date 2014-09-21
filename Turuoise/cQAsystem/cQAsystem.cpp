@@ -225,7 +225,7 @@ const std::vector<DocInfo>* CQAsystem::sortResult(const Integer show_limit)
 	return sorted_result;
 }
 
-void CQAsystem::dispalyResult(const Integer show_limit)
+void CQAsystem::displayResult(const Integer show_limit)
 {
 	std::cout << "Ready to dispalyResult" << std::endl;
 	std::partial_sort(mScoreResult.begin(), mScoreResult.begin()+show_limit, mScoreResult.end());
