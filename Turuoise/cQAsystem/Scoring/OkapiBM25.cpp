@@ -150,13 +150,13 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 	score_result.resize(mNumOfDocs);
 
 	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapQuestionDoc = mSqlConnector->getALLDocInfoMap( QUESTION);
-	std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoMap( ANSWER);
+	//std::map< Integer, std::map<String, FreqScore<Integer, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoMap( ANSWER);
 
 	std::map< Integer, Integer> mapQuestionDF = mSqlConnector->getALLDF( QUESTION);
-	std::map< Integer, Integer> mapAnswerDF = mSqlConnector->getALLDF( ANSWER);
+	//std::map< Integer, Integer> mapAnswerDF = mSqlConnector->getALLDF( ANSWER);
 
 	std::map< Integer, Integer> mapQuestionDL = mSqlConnector->getALLDocTextLength( QUESTION);
-	std::map< Integer, Integer> mapAnswerDL = mSqlConnector->getALLDocTextLength( ANSWER);
+	//std::map< Integer, Integer> mapAnswerDL = mSqlConnector->getALLDocTextLength( ANSWER);
 		
 	omp_set_num_threads( 4);
 	//omp_set_num_threads( 8);
@@ -172,10 +172,10 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 		Real que_prob = 0.0;
 		Real ans_prob = 0.0;
 		auto avgdl_q = cal_avgdl( mapQuestionDL);
-		auto avgdl_a = cal_avgdl( mapAnswerDL);
+		//auto avgdl_a = cal_avgdl( mapAnswerDL);
 		
 		std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInQuestion = mapQuestionDoc[ doc_id];
-		std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInAnswer = mapAnswerDoc[ doc_id];
+		//std::map<String, FreqScore<Integer, Integer>>	mSetDocInfoInAnswer = mapAnswerDoc[ doc_id];
 		//mSetDocInfoInQuestion = mSqlConnector->getDocInfoMap(doc_id, QUESTION);
 		//mSetDocInfoInAnswer = mSqlConnector->getDocInfoMap(doc_id, ANSWER);
 
@@ -246,7 +246,7 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 					que_prob += max_element_que_prob;
 				}
 			}
-
+			/*
 			// calculate answer area
 			for( auto ans = mSetDocInfoInAnswer.begin() ; ans != mSetDocInfoInAnswer.end() ; ans++)
 			{
@@ -303,10 +303,12 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 					ans_prob += max_element_ans_prob;
 				}
 			}
-
+			*/
 		}
 		
-		DocInfo doc(doc_id, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
+
+		//DocInfo doc(doc_id, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
+		DocInfo doc(doc_id, que_prob*QUESTION_RATIO);
 		score_result[doc_id] = doc;
 	}
 	std::cout << std::endl;

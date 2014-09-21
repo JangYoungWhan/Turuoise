@@ -29,7 +29,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 	score_result.resize(mNumOfDocs);
 
 	std::map< Integer, std::vector<Term<String, Integer>>> mapQuestionDoc = mSqlConnector->getALLDocInfoVector( QUESTION);
-	std::map< Integer, std::vector<Term<String, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoVector( ANSWER);
+	//std::map< Integer, std::vector<Term<String, Integer>>> mapAnswerDoc = mSqlConnector->getALLDocInfoVector( ANSWER);
 
 	omp_set_num_threads( 4);
 	
@@ -42,10 +42,10 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 		mProgressBar->dispalyPrgressBar( count++, mNumOfDocs-1);
 				
 		std::vector<Term<String, Integer>>&	mVectorDocInfoInQuestion = mapQuestionDoc[ i];
-		std::vector<Term<String, Integer>>&	mVectorDocInfoInAnswer = mapAnswerDoc[ i];
+		//std::vector<Term<String, Integer>>&	mVectorDocInfoInAnswer = mapAnswerDoc[ i];
 
 		Real que_prob = 0;
-		Real ans_prob = 0;
+		//Real ans_prob = 0;
 		Integer magA, que_magB, ans_magB;
 		magA = que_magB = ans_magB = 0;
 
@@ -105,7 +105,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 				}
 			}
 			
-			
+			/*
 			// calculate answer area
 			for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
 				Term<String, Integer>& ans_term = mVectorDocInfoInAnswer[ n];
@@ -150,7 +150,7 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 					ans_prob += max_element_ans_prob;
 				}
 			}
-			
+			*/
 			magA += qry->getTermFreq() * qry->getTermFreq();
 		}
 		
@@ -160,18 +160,20 @@ void CosineSimilarity::beginScoring(std::set<Term<String, Integer>> *query_resul
 			que_magB += que_term.getTermFreq() * que_term.getTermFreq();
 		}
 			
+		/*
 		for( int n = 0 ; n < mVectorDocInfoInAnswer.size() ; n++) {
 			Term<String, Integer> ans_term = mVectorDocInfoInAnswer[ n];
 			ans_magB += ans_term.getTermFreq() * ans_term.getTermFreq();
-		}
+		}*/
 		
 		
 		double que_denom = sqrt( magA) * sqrt( que_magB);
-		double ans_denom = sqrt( magA) * sqrt( ans_magB);
+		//double ans_denom = sqrt( magA) * sqrt( ans_magB);
 		que_prob = ( que_denom == 0)? 0 : que_prob / que_denom;
-		ans_prob = ( ans_denom == 0)? 0 : ans_prob / ans_denom;
+		//ans_prob = ( ans_denom == 0)? 0 : ans_prob / ans_denom;
 
-		DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob * ANSWER_RATIO);
+		//DocInfo doc(i, que_prob*QUESTION_RATIO + ans_prob * ANSWER_RATIO);
+		DocInfo doc(i, que_prob*QUESTION_RATIO);
 		score_result[i] = doc;
 	}
 	std::cout << std::endl;

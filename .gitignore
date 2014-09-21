@@ -229,3 +229,6 @@ FakesAssemblies/
 cQASystem/*.vcxproj
 cQASystem/*.vcxproj.filters
 Turuoise/cQAsystem/cQAsystem.vcxproj.filters
+Turuoise/cQAsystem/result.txt
+Turuoise/cQAsystem/result.txt
+Turuoise/cQAsystem/result.xml
