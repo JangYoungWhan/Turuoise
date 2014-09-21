@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
 		auto *result = pQAsystem->sortResult( option.display_limit);
 		writeResultXml(iter->qum, result);
 		delete result;
-		pQAsystem->writeResult(iter->query, option.display_limit);
+		//pQAsystem->writeResult(iter->query, option.display_limit);
 
 		//delete pQAsystem;
 	}

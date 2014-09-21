@@ -34,7 +34,13 @@ bool CQAsystem::loadTraningDir(const char* training_dir)
 	DIR *dir = opendir(training_dir);
 	if(!dir)
 	{
-		std::cerr << "Can not open directory : [" << dir << "]" << std::endl;
+		std::cerr << "Can not open training directory : [" << dir << "]" << std::endl;
+
+		mSqliteConnector = new SqliteConnector(mDbName);
+		mSqliteConnector->initDB();
+		mNumOfDocs = mSqliteConnector->getDocCount();
+		delete mSqliteConnector;
+
 		return false;
 	}
 
@@ -56,6 +62,7 @@ bool CQAsystem::loadTraningDir(const char* training_dir)
 	}
 	closedir(dir);
 
+	mNumOfDocs = mDocId2DocPath.size();
 	return true;
 }
 
@@ -132,17 +139,15 @@ void CQAsystem::calculateScore()
 	mSqliteConnector = new SqliteConnector(mDbName);
 	mSqliteConnector->openDB();
 
-	auto numOfDocs = mDocId2DocPath.size();
-
 	std::cout << "Ready to calculateScore" << std::endl;
 
 	#ifndef _QUERY_LIKELYHOOD_METHOD_
-	//mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
-	//mScoreCalculator = new NaiveBeysian(numOfDocs, mSqliteConnector);
-	mScoreCalculator = new OkapiBM25(0.8, 0.2, numOfDocs, mSqliteConnector);
+	//mScoreCalculator = new CosineSimilarity(mNumOfDocs, mSqliteConnector);
+	//mScoreCalculator = new NaiveBeysian(mNumOfDocs, mSqliteConnector);
+	mScoreCalculator = new OkapiBM25(0.8, 0.2, mNumOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, 0.7, 1);
 	#else
-	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
+	mScoreCalculator = new DocLanguageModel(0.0, 1.0, mNumOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
 	#endif
 
@@ -160,42 +165,40 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 	mSqliteConnector = new SqliteConnector(mDbName);
 	mSqliteConnector->openDB();
 
-	auto numOfDocs = mDocId2DocPath.size();
-
 	std::cout << "Ready to calculateScore" << std::endl;
 	
 	if( scoring_func == FUNC_COSINE)
-		mScoreCalculator = new CosineSimilarity(numOfDocs, mSqliteConnector);
+		mScoreCalculator = new CosineSimilarity(mNumOfDocs, mSqliteConnector);
 	else if( scoring_func == FUNC_BM25)
-		mScoreCalculator = new OkapiBM25( question_weight, 0, numOfDocs, mSqliteConnector);
+		mScoreCalculator = new OkapiBM25( question_weight, 0, mNumOfDocs, mSqliteConnector);
 	
 	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, synonym_weight, libenstein_weight);
 	std::vector<DocInfo> vec_QuestionScoreResult = mScoreResult;
 	mScoreResult.clear();
 	delete mScoreCalculator;
 
-	mScoreCalculator = new DocLanguageModel(0.0, 1.0, numOfDocs, mSqliteConnector);
+	mScoreCalculator = new DocLanguageModel(0.0, 1.0, mNumOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
 	std::vector<DocInfo> vec_AnswerScoreResult = mScoreResult;
 	mScoreResult.clear();
 
 	Real sum_QuestionScore = 0, sum_AnswerScore = 0;
 	 
-	for( int n = 0 ; n < numOfDocs ; n++) {
+	for( int n = 0 ; n < mNumOfDocs ; n++) {
 		sum_QuestionScore += vec_QuestionScoreResult[ n].getScore();
 		sum_AnswerScore += vec_AnswerScoreResult[ n].getScore();
 	}
 
 	if( sum_QuestionScore != 0) {
-	for( int n = 0 ; n < numOfDocs ; n++) {
+	for( int n = 0 ; n < mNumOfDocs ; n++) {
 		vec_QuestionScoreResult[ n].putScore( vec_QuestionScoreResult[ n].getScore() / sum_QuestionScore );
 		vec_AnswerScoreResult[ n].putScore( vec_AnswerScoreResult[ n].getScore() / sum_AnswerScore);
 	}
 	}
 
 	if( sum_AnswerScore != 0) {
-	mScoreResult.resize( numOfDocs);
-	for( int n = 0 ; n < numOfDocs ; n++) {
+	mScoreResult.resize( mNumOfDocs);
+	for( int n = 0 ; n < mNumOfDocs ; n++) {
 		DocInfo doc( n, vec_QuestionScoreResult[ n].getScore() * question_weight + vec_AnswerScoreResult[ n].getScore() * answer_weight);
 		mScoreResult[n] = doc;
 	}

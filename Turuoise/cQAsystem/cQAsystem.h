@@ -32,6 +32,7 @@
 class CQAsystem : public QAsystem
 {
 private:
+	Integer mNumOfDocs;
 	String mDbName;
 
 private:
