@@ -307,7 +307,7 @@ void OkapiBM25::beginScoring(std::set<Term<String, Integer>> *query_result, std:
 		}
 		
 
-		//DocInfo doc(doc_id, que_prob*QUESTION_RATIO + ans_prob*ANSWER_RATIO);
+		//DocInfo doc(doc_id, que_prob*0.5 + ans_prob*0.5);
 		DocInfo doc(doc_id, que_prob*QUESTION_RATIO);
 		score_result[doc_id] = doc;
 	}

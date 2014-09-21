@@ -47,7 +47,7 @@ class Optstruct {
 			get_synonym_data = false;
 			synonym_data_file_name = "synonym.txt";
 			db_name = "Turuoise.db";
-			scoring_func = FUNC_COSINE;
+			scoring_func = FUNC_BM25;
 			question_weight = 0.8;
 			answer_weight = 0.2;
 			liebenstein_weight = 1;
@@ -69,7 +69,7 @@ class Optstruct {
 								"#db 이름.\n" \
 								"DB_NAME Turuoise.db\n\n"	\
 								"#사용할 스코어링 함수. 코사인 유사도 = 0, BM25 = 1\n" \
-								"SCORING_FUNC 0\n\n"	\
+								"SCORING_FUNC 1\n\n"	\
 								"#쿼리 분석에서 질문의 가중치\n" \
 								"QUESTION_WEIGHT 0.8\n\n"	\
 								"#쿼리 분석에서 답변의 가중치\n" \

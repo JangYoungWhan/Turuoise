@@ -180,21 +180,25 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 	mScoreResult.clear();
 
 	Real sum_QuestionScore = 0, sum_AnswerScore = 0;
-
+	 
 	for( int n = 0 ; n < numOfDocs ; n++) {
 		sum_QuestionScore += vec_QuestionScoreResult[ n].getScore();
 		sum_AnswerScore += vec_AnswerScoreResult[ n].getScore();
 	}
 
+	if( sum_QuestionScore != 0) {
 	for( int n = 0 ; n < numOfDocs ; n++) {
 		vec_QuestionScoreResult[ n].putScore( vec_QuestionScoreResult[ n].getScore() / sum_QuestionScore );
 		vec_AnswerScoreResult[ n].putScore( vec_AnswerScoreResult[ n].getScore() / sum_AnswerScore);
 	}
+	}
 
+	if( sum_AnswerScore != 0) {
 	mScoreResult.resize( numOfDocs);
 	for( int n = 0 ; n < numOfDocs ; n++) {
 		DocInfo doc( n, vec_QuestionScoreResult[ n].getScore() * question_weight + vec_AnswerScoreResult[ n].getScore() * answer_weight);
 		mScoreResult[n] = doc;
+	}
 	}
 	
 	std::cout << "Scoring complete" << std::endl << std::endl;
