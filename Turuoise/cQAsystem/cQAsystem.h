@@ -62,7 +62,7 @@ public:
 	virtual void beginTraning(String& srcDir, bool isTrained);
 	virtual void analyzeQuery(String& query);
 	virtual void calculateScore();
-	virtual void calculateScore( const int scoring_func, const double question_weight, const double answer_weight, const double libenstein_weight, const double synonym_weight);
+	virtual void calculateScore( const int scoring_func, const double mv_weight, const double mp_weight, const double libenstein_weight, const double synonym_weight);
 	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit);
 	virtual void displayResult(const Integer show_limit);
 	virtual void writeResult(const String &query, const Integer show_limit);

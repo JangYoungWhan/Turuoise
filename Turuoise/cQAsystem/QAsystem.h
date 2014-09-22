@@ -22,7 +22,7 @@ public:
 
 	// Phase 3 : Get score of all Q-A pairs in the list.
 	virtual void calculateScore() = 0;
-	virtual void calculateScore( const int scoring_func, const double question_weight, const double answer_weight, const double libenstein_weight, const double synonym_weight) = 0;
+	virtual void calculateScore( const int scoring_func, const double mv_weight, const double mp_weight, const double libenstein_weight, const double synonym_weight) = 0;
 
 	// Phase 4 : Refine score and print Q-A pairs in descending order.
 	virtual const std::vector<DocInfo>* sortResult(const Integer show_limit) = 0;

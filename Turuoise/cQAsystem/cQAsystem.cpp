@@ -160,7 +160,7 @@ void CQAsystem::calculateScore()
 
 
 enum { FUNC_COSINE = 0, FUNC_BM25};
-void CQAsystem::calculateScore( const int scoring_func, const double question_weight, const double answer_weight, const double libenstein_weight, const double synonym_weight)
+void CQAsystem::calculateScore( const int scoring_func, const double mv_weight, const double mp_weight, const double libenstein_weight, const double synonym_weight)
 {
 	mSqliteConnector = new SqliteConnector(mDbName);
 	mSqliteConnector->openDB();
@@ -170,14 +170,14 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 	if( scoring_func == FUNC_COSINE)
 		mScoreCalculator = new CosineSimilarity(mNumOfDocs, mSqliteConnector);
 	else if( scoring_func == FUNC_BM25)
-		mScoreCalculator = new OkapiBM25( question_weight, 0, mNumOfDocs, mSqliteConnector);
+		mScoreCalculator = new OkapiBM25( 0.8, 0.2, mNumOfDocs, mSqliteConnector);
 	
 	mScoreCalculator->beginScoring(mSetQueryResult, mScoreResult, synonym_weight, libenstein_weight);
 	std::vector<DocInfo> vec_QuestionScoreResult = mScoreResult;
 	mScoreResult.clear();
 	delete mScoreCalculator;
 
-	mScoreCalculator = new DocLanguageModel(0.0, 1.0, mNumOfDocs, mSqliteConnector);
+	mScoreCalculator = new DocLanguageModel(0.1, 0.9, mNumOfDocs, mSqliteConnector);
 	mScoreCalculator->beginScoring(mLstQueryResult, mScoreResult);
 	std::vector<DocInfo> vec_AnswerScoreResult = mScoreResult;
 	mScoreResult.clear();
@@ -199,7 +199,7 @@ void CQAsystem::calculateScore( const int scoring_func, const double question_we
 	if( sum_AnswerScore != 0) {
 	mScoreResult.resize( mNumOfDocs);
 	for( int n = 0 ; n < mNumOfDocs ; n++) {
-		DocInfo doc( n, vec_QuestionScoreResult[ n].getScore() * question_weight + vec_AnswerScoreResult[ n].getScore() * answer_weight);
+		DocInfo doc( n, vec_QuestionScoreResult[ n].getScore() * mv_weight + vec_AnswerScoreResult[ n].getScore() * mp_weight);
 		mScoreResult[n] = doc;
 	}
 	}

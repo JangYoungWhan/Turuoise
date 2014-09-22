@@ -70,10 +70,10 @@ class Optstruct {
 								"DB_NAME Turuoise.db\n\n"	\
 								"#사용할 스코어링 함수. 코사인 유사도 = 0, BM25 = 1\n" \
 								"SCORING_FUNC 1\n\n"	\
-								"#쿼리 분석에서 질문의 가중치\n" \
-								"QUESTION_WEIGHT 0.8\n\n"	\
-								"#쿼리 분석에서 답변의 가중치\n" \
-								"ANSWER_WEIGHT 0.2\n\n"	\
+								"#Vector Space Model(코사인유사도, BM25) 가중치\n" \
+								"MV_WEIGHT 0.5\n\n"	\
+								"#Probability Model(Language Model) 가중치\n" \
+								"MP_WEIGHT 0.5\n\n"	\
 								"#쿼리 분석에서 리벤슈타인 가중치. 사용하지 않으려면 0\n" \
 								"LIEBENSTEIN_WEIGHT 1\n\n"	\
 								"#쿼리 분석에서 동의어 가중치. 사용하지 않으려면 0\n" \
@@ -92,8 +92,8 @@ class Optstruct {
 			std::cout << "SYNONYM_DATA_FILE_NAME " << synonym_data_file_name << std::endl;
 			std::cout << "DB_NAME " << db_name << std::endl;
 			std::cout << "SCORING_FUNC " << scoring_func << std::endl;
-			std::cout << "QUESTION_WEIGHT " << question_weight << std::endl;
-			std::cout << "ANSWER_WEIGHT " << answer_weight << std::endl;
+			std::cout << "MV_WEIGHT " << question_weight << std::endl;
+			std::cout << "MP_WEIGHT " << answer_weight << std::endl;
 			std::cout << "LIEBENSTEIN_WEIGHT " << liebenstein_weight << std::endl;
 			std::cout << "SYNONYM_WEIGHT " << synonym_weight << std::endl;
 			std::cout << "DISPLAY_LIMIT " << display_limit << std::endl << std::endl;
@@ -358,14 +358,14 @@ bool readOptionFile( Optstruct& option) {
 					option.scoring_func = FUNC_BM25;
 			}
 		}
-		else if( strncmp( token, "QUESTION_WEIGHT", strlen( "QUESTION_RATIO")) == 0) {
+		else if( strncmp( token, "MV_WEIGHT", strlen( "MV_WEIGHT")) == 0) {
 			token = strtok( NULL, " \t\n");
 			if( token == NULL)
 				return false;
 			else
 				option.question_weight = atof( token);
 		}
-		else if( strncmp( token, "ANSWER_WEIGHT", strlen( "ANSWER_RATIO")) == 0) {
+		else if( strncmp( token, "MP_WEIGHT", strlen( "MP_WEIGHT")) == 0) {
 			token = strtok( NULL, " \t\n");
 			if( token == NULL)
 				return false;
